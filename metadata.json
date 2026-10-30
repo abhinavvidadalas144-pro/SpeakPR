@@ -1,0 +1,6 @@
+{
+  "name": "Hollyoak's Plucky Sprout Squad - Meadowbell",
+  "description": "SpeakPR — Premium AI-powered developer tool that generates clearer pull request descriptions from Git diffs and spoken developer reasoning.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

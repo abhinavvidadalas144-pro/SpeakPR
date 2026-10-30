@@ -1,0 +1,3270 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SpeakPR — Say the why. Ship the PR.</title>
+    <meta name="description" content="A premium AI-powered developer tool that turns Git diffs and spoken developer reasoning into rich, clear PR descriptions and evidence-backed flags." />
+    <meta property="og:title" content="SpeakPR — Say the why. Ship the PR." />
+    <meta property="og:description" content="A diff shows what changed, never why. Speak your reasoning once and give reviewers the context they need." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts Preconnect and Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Grandstander:wght@900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <style>
+      /* Preserved Original Character Display Font (Grandstander 900) */
+      @font-face {
+        font-family: 'Grandstander';
+        font-style: normal;
+        font-weight: 900;
+        font-display: swap;
+        src: url('/fonts/grandstander-900.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      /* Professional Interface Sans-serif (Inter) */
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('/fonts/inter-latin.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url('/fonts/inter-latin.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      /* Strict 8px Spacing Rhythm & Theme Variables */
+      :root {
+        --space-1: 8px;
+        --space-2: 16px;
+        --space-3: 24px;
+        --space-4: 32px;
+        --space-5: 40px;
+        --space-6: 48px;
+        --space-8: 64px;
+        --space-10: 80px;
+
+        /* Light Mode Palette */
+        --bg-main: #F7F8FA;
+        --surface-primary: #FFFFFF;
+        --surface-secondary: #F0F2F6;
+        --surface-elevated: #FFFFFF;
+        --surface-code: #181A20;
+        --text-primary: #20232B;
+        --text-secondary: #737784;
+        --text-muted: #969AA6;
+        --border-color: #E6E8EE;
+        --border-subtle: #F0F2F6;
+        --accent-indigo: #6366F1;
+        --accent-indigo-hover: #4F46E5;
+        --accent-violet: #8B5CF6;
+        --accent-glow: rgba(99, 102, 241, 0.16);
+        --status-success: #10B981;
+        --status-success-bg: rgba(16, 185, 129, 0.1);
+        --status-warning: #F59E0B;
+        --status-warning-bg: rgba(245, 158, 11, 0.12);
+        --diff-add-bg: rgba(16, 185, 129, 0.18);
+        --diff-add-text: #10B981;
+        --diff-del-bg: rgba(239, 68, 68, 0.18);
+        --diff-del-text: #EF4444;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+        --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.1), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+        --hero-scrim: linear-gradient(180deg, rgba(20, 45, 75, 0.35) 0%, rgba(15, 35, 60, 0.12) 35%, rgba(247, 248, 250, 0.82) 85%, #F7F8FA 100%);
+      }
+
+      /* Dark Mode Palette */
+      [data-theme="dark"] {
+        --bg-main: #101116;
+        --surface-primary: #181A20;
+        --surface-secondary: #22252E;
+        --surface-elevated: #20232B;
+        --surface-code: #121318;
+        --text-primary: #F1F3F7;
+        --text-secondary: #9CA3AF;
+        --text-muted: #6B7280;
+        --border-color: #2A2D37;
+        --border-subtle: #1F222B;
+        --accent-indigo: #818CF8;
+        --accent-indigo-hover: #6366F1;
+        --accent-violet: #A78BFA;
+        --accent-glow: rgba(129, 140, 248, 0.22);
+        --status-success: #34D399;
+        --status-success-bg: rgba(52, 211, 153, 0.15);
+        --status-warning: #FBBF24;
+        --status-warning-bg: rgba(251, 191, 36, 0.15);
+        --diff-add-bg: rgba(52, 211, 153, 0.2);
+        --diff-add-text: #34D399;
+        --diff-del-bg: rgba(248, 113, 113, 0.2);
+        --diff-del-text: #F87171;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+        --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45);
+        --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+        --hero-scrim: linear-gradient(180deg, rgba(16, 17, 22, 0.55) 0%, rgba(16, 17, 22, 0.32) 35%, rgba(16, 17, 22, 0.88) 85%, #101116 100%);
+      }
+
+      /* Base Reset & Core Styles */
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        text-size-adjust: 100%;
+      }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        line-height: 1.5;
+        transition: background-color 0.25s ease, color 0.25s ease;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+      }
+
+      /* Typography Helpers */
+      .font-cartoon {
+        font-family: 'Grandstander', cursive, sans-serif;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+      }
+
+      .font-sans {
+        font-family: 'Inter', sans-serif;
+      }
+
+      .font-mono {
+        font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1240px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: var(--space-3);
+        padding-right: var(--space-3);
+      }
+
+      /* 1. Refined Editorial Navigation Bar */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background-color: rgba(14, 18, 27, 0.62);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        transition: background-color 0.25s ease, border-color 0.25s ease;
+      }
+
+      [data-theme="dark"] .site-header {
+        background-color: rgba(10, 12, 18, 0.82);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+
+      /* Left: Brand */
+      .brand-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        text-decoration: none;
+        color: #FFFFFF;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: -0.015em;
+        line-height: 1;
+        transition: opacity 0.18s ease;
+      }
+
+      .brand-wrap:hover {
+        opacity: 0.92;
+      }
+
+      .brand-icon-box {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        box-shadow: 0 1px 4px rgba(99, 102, 241, 0.25);
+      }
+
+      .brand-text {
+        font-family: 'Inter', sans-serif;
+        color: #FFFFFF;
+      }
+
+      /* Center: Navigation Links (No pill capsule, no dot separators) */
+      .nav-links-center {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.76);
+        text-decoration: none;
+        font-family: 'Inter', sans-serif;
+        font-size: 13.5px;
+        font-weight: 500;
+        position: relative;
+        padding: 4px 0;
+        transition: color 0.18s ease;
+      }
+
+      .nav-link:hover {
+        color: #FFFFFF;
+      }
+
+      .nav-link.active {
+        color: #FFFFFF;
+      }
+
+      /* Restrained active / hover accent indicator */
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1.5px;
+        background-color: var(--accent-indigo);
+        transition: width 0.2s ease;
+        border-radius: 1px;
+      }
+
+      .nav-link:hover::after,
+      .nav-link.active::after {
+        width: 100%;
+      }
+
+      /* Right: Actions Cluster */
+      .nav-right-cluster {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .theme-btn-toggle {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 6px;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.72);
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+
+      .theme-btn-toggle:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #FFFFFF;
+        border-color: rgba(255, 255, 255, 0.22);
+      }
+
+      /* Compact, refined CTA (modest radius, subtle arrow, no exaggerated pill) */
+      .btn-try-demo-nav {
+        background-color: var(--accent-indigo);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 6px;
+        padding: 6px 13px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background-color 0.18s ease, border-color 0.18s ease;
+      }
+
+      .btn-try-demo-nav:hover {
+        background-color: var(--accent-indigo-hover);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      .btn-try-demo-nav .cta-arrow {
+        transition: transform 0.18s ease;
+      }
+
+      .btn-try-demo-nav:hover .cta-arrow {
+        transform: translateX(2px);
+      }
+
+      /* Keyboard accessibility */
+      .nav-link:focus-visible,
+      .theme-btn-toggle:focus-visible,
+      .btn-try-demo-nav:focus-visible,
+      .brand-wrap:focus-visible {
+        outline: 2px solid var(--accent-indigo);
+        outline-offset: 2px;
+      }
+
+      /* 2. Hero Section Built Over Original Background Video */
+      .hero-section {
+        position: relative;
+        min-height: 720px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      /* Exact Looping Background Video & Plate Container */
+      .hero-video-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .hero-video-plate {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center bottom;
+        display: block;
+      }
+
+      .hero-video-media {
+        position: absolute;
+        top: -6.25%;
+        left: 0;
+        width: 100%;
+        height: 112.5%;
+        object-fit: cover;
+        object-position: center bottom;
+        display: block;
+      }
+
+      /* Subtle Scrim for Harmonious Foreground Legibility */
+      .hero-video-scrim {
+        position: absolute;
+        inset: 0;
+        background: var(--hero-scrim);
+        z-index: 2;
+        transition: background 0.25s ease;
+      }
+
+      .hero-content-wrap {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        padding-top: var(--space-8);
+        padding-bottom: var(--space-10);
+      }
+
+      .hero-columns-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: var(--space-6);
+        align-items: center;
+      }
+
+      .hero-pill-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        font-size: 13px;
+        font-weight: 600;
+        color: #1e3a5f;
+        margin-bottom: var(--space-3);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+
+      [data-theme="dark"] .hero-pill-badge {
+        background: rgba(26, 29, 38, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #E2E8F0;
+      }
+
+      .hero-pill-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--accent-indigo);
+        box-shadow: 0 0 6px var(--accent-indigo);
+      }
+
+      /* The Preserved Character Display Font Headline */
+      .hero-title {
+        font-size: 58px;
+        line-height: 1.12;
+        color: #FFFFFF;
+        text-shadow: 0 4px 20px rgba(18, 42, 70, 0.45);
+        margin-bottom: var(--space-3);
+      }
+
+      .hero-lead-text {
+        font-size: 18px;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.95);
+        text-shadow: 0 2px 8px rgba(15, 35, 65, 0.4);
+        max-width: 520px;
+        margin-bottom: var(--space-4);
+      }
+
+      .hero-btn-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-3);
+      }
+
+      .btn-hero-primary {
+        background-color: #FFFFFF;
+        color: var(--accent-indigo-hover);
+        font-weight: 600;
+        font-size: 15px;
+        padding: 12px 26px;
+        border-radius: 24px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .btn-hero-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      }
+
+      .btn-hero-secondary {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        color: #FFFFFF;
+        font-weight: 500;
+        font-size: 15px;
+        padding: 12px 24px;
+        border-radius: 24px;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background-color 0.18s ease, transform 0.18s ease;
+      }
+
+      .btn-hero-secondary:hover {
+        background: rgba(255, 255, 255, 0.35);
+        transform: translateY(-1px);
+      }
+
+      .hero-trust-indicator {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+        text-shadow: 0 1px 4px rgba(10, 25, 45, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Hero Floating Interface Card HUD */
+      .hero-hud-preview {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+      }
+
+      [data-theme="dark"] .hero-hud-preview {
+        background: rgba(24, 26, 32, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .hud-title-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(240, 242, 246, 0.7);
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      [data-theme="dark"] .hud-title-bar {
+        background: rgba(34, 37, 46, 0.7);
+      }
+
+      .hud-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .hud-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: var(--border-color);
+      }
+
+      .hud-file-chip {
+        font-size: 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .hud-body-wrap {
+        padding: var(--space-2);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .hud-diff-box {
+        background-color: var(--surface-code);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #E2E8F0;
+      }
+
+      .hud-voice-row {
+        background: var(--surface-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .hud-mic-avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background-color: var(--accent-indigo);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .hud-flag-box {
+        background-color: var(--status-warning-bg);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* 3. Main SpeakPR Workspace */
+      .workspace-section {
+        padding-top: var(--space-8);
+        padding-bottom: var(--space-10);
+        position: relative;
+        overflow: hidden;
+        z-index: 10;
+      }
+
+      .workspace-video-backdrop {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .workspace-video-media {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        display: block;
+      }
+
+      .workspace-video-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(247, 248, 250, 0.76);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 2;
+        transition: background 0.25s ease;
+      }
+
+      [data-theme="dark"] .workspace-video-overlay {
+        background: rgba(16, 17, 22, 0.82);
+      }
+
+      .workspace-top-bar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: var(--space-3);
+        flex-wrap: wrap;
+        gap: var(--space-2);
+      }
+
+      .section-heading-main {
+        font-size: 28px;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+
+      .section-sub-copy {
+        font-size: 15px;
+        color: var(--text-secondary);
+        max-width: 620px;
+      }
+
+      .preset-select-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: var(--surface-primary);
+        border: 1px solid var(--border-color);
+        padding: 8px 14px;
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .preset-select-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      .preset-dropdown {
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        font-size: 13.5px;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+        font-family: inherit;
+      }
+
+      .workspace-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+        align-items: stretch;
+      }
+
+      .workspace-card {
+        background-color: var(--surface-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .card-tab-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-2);
+        height: 48px;
+        background-color: var(--surface-secondary);
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .tab-buttons-wrap {
+        display: flex;
+        gap: 4px;
+      }
+
+      .panel-tab-btn {
+        background: transparent;
+        border: none;
+        padding: 6px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.18s ease;
+      }
+
+      .panel-tab-btn:hover {
+        color: var(--text-primary);
+      }
+
+      .panel-tab-btn.active {
+        background-color: var(--surface-primary);
+        color: var(--text-primary);
+        font-weight: 600;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .badge-counter {
+        background-color: var(--status-warning);
+        color: #ffffff;
+        font-size: 10.5px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 10px;
+      }
+
+      .btn-header-ghost {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s ease;
+      }
+
+      .btn-header-ghost:hover {
+        background-color: var(--surface-primary);
+        color: var(--text-primary);
+      }
+
+      .file-meta-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 16px;
+        background-color: var(--surface-primary);
+        border-bottom: 1px solid var(--border-color);
+        font-size: 12.5px;
+        color: var(--text-secondary);
+      }
+
+      .diff-code-scroll {
+        background-color: var(--surface-code);
+        padding: var(--space-2);
+        font-size: 12.5px;
+        line-height: 1.65;
+        overflow-y: auto;
+        max-height: 270px;
+        color: #E2E8F0;
+      }
+
+      .diff-code-scroll pre {
+        margin: 0;
+        font-family: inherit;
+      }
+
+      .diff-row {
+        display: flex;
+        gap: 8px;
+      }
+
+      .diff-line-no {
+        color: #64748B;
+        user-select: none;
+        width: 22px;
+        text-align: right;
+      }
+
+      .diff-add {
+        background-color: var(--diff-add-bg);
+        color: var(--diff-add-text);
+        width: 100%;
+        padding-left: 4px;
+        border-radius: 2px;
+      }
+
+      .diff-del {
+        background-color: var(--diff-del-bg);
+        color: var(--diff-del-text);
+        width: 100%;
+        padding-left: 4px;
+        border-radius: 2px;
+      }
+
+      /* Voice Reasoning Input Area */
+      .voice-box-container {
+        padding: var(--space-3);
+        border-top: 1px solid var(--border-color);
+        background-color: var(--surface-primary);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .voice-box-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .voice-box-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .voice-controls-cluster {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .mic-button-circle {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: var(--surface-secondary);
+        border: 2px solid var(--border-color);
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .mic-button-circle:hover {
+        border-color: var(--accent-indigo);
+        color: var(--accent-indigo);
+        background-color: var(--surface-primary);
+      }
+
+      .mic-button-circle.listening {
+        background-color: var(--accent-indigo);
+        color: #ffffff;
+        border-color: var(--accent-violet);
+        box-shadow: 0 0 0 4px var(--accent-glow);
+        animation: pulse-ring 1.8s infinite;
+      }
+
+      @keyframes pulse-ring {
+        0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5); }
+        70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+      }
+
+      .waveform-bar-cluster {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        height: 24px;
+      }
+
+      .audio-bar {
+        width: 3px;
+        height: 8px;
+        border-radius: 3px;
+        background-color: var(--border-color);
+        transition: height 0.15s ease, background-color 0.2s ease;
+      }
+
+      .listening .audio-bar {
+        background-color: var(--accent-indigo);
+        animation: bar-dance 0.8s ease-in-out infinite alternate;
+      }
+
+      .audio-bar:nth-child(1) { animation-delay: 0.1s; }
+      .audio-bar:nth-child(2) { animation-delay: 0.25s; }
+      .audio-bar:nth-child(3) { animation-delay: 0.4s; }
+      .audio-bar:nth-child(4) { animation-delay: 0.15s; }
+      .audio-bar:nth-child(5) { animation-delay: 0.3s; }
+      .audio-bar:nth-child(6) { animation-delay: 0.5s; }
+      .audio-bar:nth-child(7) { animation-delay: 0.2s; }
+      .audio-bar:nth-child(8) { animation-delay: 0.35s; }
+
+      @keyframes bar-dance {
+        0% { height: 6px; }
+        100% { height: 22px; }
+      }
+
+      .voice-status-line {
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      .voice-textarea-field {
+        width: 100%;
+        min-height: 84px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: var(--surface-primary);
+        color: var(--text-primary);
+        font-family: 'Inter', sans-serif;
+        font-size: 13.5px;
+        line-height: 1.5;
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .voice-textarea-field:focus {
+        border-color: var(--accent-indigo);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+
+      .voice-footnote-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--text-muted);
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .generate-footer-bar {
+        padding: var(--space-2) var(--space-3);
+        background-color: var(--surface-secondary);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .btn-generate-pr {
+        background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 10px 22px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 8px var(--accent-glow);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+      }
+
+      .btn-generate-pr:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px var(--accent-glow);
+      }
+
+      .btn-generate-pr:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      /* Results Right Panel */
+      .results-content-wrap {
+        padding: var(--space-3);
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        min-height: 480px;
+      }
+
+      .pr-section-block {
+        background-color: var(--surface-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px 14px;
+      }
+
+      .pr-section-headline-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+      }
+
+      .pr-section-label {
+        font-size: 12.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--accent-indigo);
+      }
+
+      .btn-copy-snippet {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 11.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: color 0.15s ease;
+      }
+
+      .btn-copy-snippet:hover {
+        color: var(--text-primary);
+      }
+
+      .pr-section-body-text {
+        font-size: 13.5px;
+        color: var(--text-primary);
+        line-height: 1.55;
+      }
+
+      /* Flags Sub-Panel */
+      .flags-callout-strip {
+        background-color: var(--surface-secondary);
+        border-left: 3px solid var(--status-warning);
+        padding: 10px 14px;
+        border-radius: 0 6px 6px 0;
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: var(--space-2);
+      }
+
+      .flag-item-card {
+        background-color: var(--surface-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: var(--space-2);
+      }
+
+      .flag-header-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .flag-type-tag {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+      }
+
+      .badge-warn {
+        background-color: var(--status-warning-bg);
+        color: var(--status-warning);
+      }
+
+      .badge-info {
+        background-color: var(--accent-glow);
+        color: var(--accent-indigo);
+      }
+
+      .flag-code-quote {
+        background-color: var(--surface-code);
+        color: #E2E8F0;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+
+      .flag-actions-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        padding-top: 6px;
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .btn-feedback-action {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s ease;
+      }
+
+      .btn-feedback-action:hover {
+        background-color: var(--surface-secondary);
+        color: var(--text-primary);
+      }
+
+      .btn-feedback-action.active-useful {
+        background-color: var(--status-success-bg);
+        border-color: var(--status-success);
+        color: var(--status-success);
+        font-weight: 600;
+      }
+
+      .btn-feedback-action.active-noise {
+        background-color: var(--diff-del-bg);
+        border-color: #EF4444;
+        color: #EF4444;
+        font-weight: 600;
+      }
+
+      /* 4. How It Works Section */
+      .how-it-works-section {
+        padding: var(--space-10) 0;
+        border-top: 1px solid var(--border-color);
+        background-color: var(--surface-primary);
+      }
+
+      .center-section-head {
+        text-align: center;
+        max-width: 640px;
+        margin: 0 auto var(--space-6);
+      }
+
+      .section-display-font-title {
+        font-size: 38px;
+        color: var(--text-primary);
+        margin-bottom: var(--space-1);
+      }
+
+      .steps-3-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-3);
+      }
+
+      .step-feature-card {
+        background-color: var(--bg-main);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: var(--space-3);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        transition: transform 0.18s ease, border-color 0.18s ease;
+      }
+
+      .step-feature-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent-indigo);
+      }
+
+      .step-digit-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background-color: var(--surface-primary);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent-indigo);
+      }
+
+      /* 5. Why Voice Comparison Section */
+      .why-voice-section {
+        padding: var(--space-10) 0;
+        border-top: 1px solid var(--border-color);
+        background-color: var(--bg-main);
+      }
+
+      .comparison-2-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      .comp-card {
+        background-color: var(--surface-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: var(--space-3);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .comp-card.after-highlight {
+        border-color: var(--accent-indigo);
+        box-shadow: 0 4px 18px var(--accent-glow);
+      }
+
+      .comp-tag {
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 4px;
+        width: fit-content;
+      }
+
+      /* Footer */
+      .site-footer {
+        padding: var(--space-5) 0;
+        border-top: 1px solid var(--border-color);
+        background-color: var(--surface-primary);
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+
+      .footer-content-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+      }
+
+      /* Toast Notification */
+      .toast-popup {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background-color: var(--surface-primary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 13px;
+        font-weight: 500;
+        box-shadow: var(--shadow-lg);
+        display: none;
+        align-items: center;
+        gap: 8px;
+        z-index: 100;
+        animation: toast-up 0.2s ease forwards;
+      }
+
+      .toast-popup.show {
+        display: flex;
+      }
+
+      @keyframes toast-up {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Responsive Breakpoints */
+      @media (max-width: 980px) {
+        .hero-columns-grid {
+          grid-template-columns: 1fr;
+          gap: var(--space-4);
+        }
+
+        .workspace-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .steps-3-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .comparison-2-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-title {
+          font-size: 44px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .nav-links-center {
+          display: none;
+        }
+
+        .hero-title {
+          font-size: 36px;
+        }
+
+        .hero-btn-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .workspace-top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Refined Editorial Navigation Bar -->
+    <header class="site-header" role="banner">
+      <div class="container nav-inner">
+        <!-- Left: SpeakPR Logo & Waveform Icon -->
+        <a href="#" class="brand-wrap" aria-label="SpeakPR Home">
+          <div class="brand-icon-box" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M17 5v14M22 9v6M7 5v14M2 9v6" />
+            </svg>
+          </div>
+          <span class="brand-text">SpeakPR</span>
+        </a>
+
+        <!-- Center: Editorial Navigation Links (no capsule, no dots) -->
+        <nav class="nav-links-center" aria-label="Main Navigation">
+          <a href="#how-it-works" class="nav-link">How it works</a>
+          <a href="#why-voice" class="nav-link">Why voice?</a>
+          <a href="#workspace" class="nav-link">Workspace</a>
+        </nav>
+
+        <!-- Right: Actions Cluster (Theme Toggle & Compact Refined CTA) -->
+        <div class="nav-right-cluster">
+          <button type="button" class="theme-btn-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <!-- Sun Icon (Active in Dark Mode) -->
+            <svg class="sun-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <!-- Moon Icon (Active in Light Mode) -->
+            <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+
+          <a href="#workspace" class="btn-try-demo-nav font-sans">
+            <span>Try demo</span>
+            <svg class="cta-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Refined Hero Section: Plays the EXACT Original Looping Background Video -->
+      <section class="hero-section" id="hero" aria-label="SpeakPR Product Hero">
+        
+        <!-- Background Video & Painted Plate Layer -->
+        <div class="hero-video-backdrop" aria-hidden="true">
+          <!-- 1. Original 9:8 Painted Plate Image -->
+          <img
+            class="hero-video-plate"
+            src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/3ca5d10d-ea2f-4907-876f-33bde169469e.jpg"
+            alt=""
+            fetchpriority="high"
+          />
+          <!-- 2. Exact Original Looping Video (960×960, 5s, loops seamlessly) -->
+          <video
+            class="hero-video-media"
+            src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/d2cb5bef-f92b-4e91-ae93-8dc6555e56ac.mp4"
+            autoplay
+            loop
+            muted
+            playsinline
+            webkit-playsinline
+          ></video>
+          <!-- 3. Carefully Tuned Scrim for Text Contrast and Cohesive Transition -->
+          <div class="hero-video-scrim"></div>
+        </div>
+
+        <!-- Foreground Hero Content -->
+        <div class="container hero-content-wrap">
+          <div class="hero-columns-grid">
+            
+            <!-- Left Side: Copy and Actions -->
+            <div class="hero-text-side">
+              <div class="hero-pill-badge font-sans">
+                <span class="hero-pill-dot" aria-hidden="true"></span>
+                <span>Voice-first PR context generator</span>
+              </div>
+
+              <!-- PRESERVED CHARACTER DISPLAY FONT (Grandstander 900) -->
+              <h1 class="hero-title font-cartoon">
+                Say the why.<br />Ship the PR.
+              </h1>
+
+              <!-- Clean Professional Sans-serif (Inter) -->
+              <p class="hero-lead-text font-sans">
+                A diff shows what changed, never why. Speak your reasoning once and give reviewers the context they need.
+              </p>
+
+              <!-- Hero Actions -->
+              <div class="hero-btn-row">
+                <a href="#workspace" class="btn-hero-primary font-sans" id="hero-btn-try">
+                  <span>Try the demo</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+
+                <a href="#how-it-works" class="btn-hero-secondary font-sans">
+                  <span>How it works</span>
+                </a>
+              </div>
+
+              <div class="hero-trust-indicator font-sans">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--status-success);">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>For teams tired of cryptic pull requests · Powered by Wispr Flow</span>
+              </div>
+            </div>
+
+            <!-- Right Side: Floating Interface Preview Window HUD -->
+            <div class="hero-hud-preview" aria-hidden="true">
+              <div class="hud-title-bar">
+                <div class="hud-dots">
+                  <div class="hud-dot"></div>
+                  <div class="hud-dot"></div>
+                  <div class="hud-dot"></div>
+                </div>
+                <div class="hud-file-chip font-mono">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                  </svg>
+                  <span>auth/rateLimiter.ts</span>
+                </div>
+                <div style="font-size: 11px; font-weight: 700; color: var(--status-success); background: var(--status-success-bg); padding: 2px 6px; border-radius: 4px;" class="font-mono">+16 -4</div>
+              </div>
+
+              <div class="hud-body-wrap font-sans">
+                <!-- Monospace Code Diff -->
+                <div class="hud-diff-box font-mono">
+                  <div style="color: #64748B; font-size: 11px;">@@ -34,4 +34,8 @@</div>
+                  <div style="color: #F87171; background: rgba(239,68,68,0.18); padding: 2px 4px; border-radius: 2px;">- const clientIp = req.ip;</div>
+                  <div style="color: #34D399; background: rgba(16,185,129,0.18); padding: 2px 4px; border-radius: 2px;">+ const accountId = req.auth?.user?.id;</div>
+                  <div style="color: #34D399; background: rgba(16,185,129,0.18); padding: 2px 4px; border-radius: 2px;">+ const key = accountId ? `acc:${accountId}` : `ip:${req.ip}`;</div>
+                </div>
+
+                <!-- Spoken Reasoning Snippet with Waveform -->
+                <div class="hud-voice-row">
+                  <div class="hud-mic-avatar">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    </svg>
+                  </div>
+                  <div style="font-size: 12.5px; line-height: 1.45; color: var(--text-secondary);">
+                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">Spoken Context (Wispr Flow)</div>
+                    <div>“Switched rate limiting from shared IP to user account IDs so campus Wi-Fi users don't trigger cascading 429 locks...”</div>
+                  </div>
+                </div>
+
+                <!-- Evidence Flag Notice -->
+                <div class="hud-flag-box">
+                  <span style="font-weight: 700; font-size: 10px; background: var(--status-warning); color: #fff; padding: 2px 5px; border-radius: 4px; text-transform: uppercase;">Flag</span>
+                  <span style="font-size: 11.5px;">Scope check: verify anonymous routes still enforce IP fallback on line 38.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Main SpeakPR Workspace -->
+      <section class="workspace-section" id="workspace" aria-label="Interactive Workspace">
+        
+        <!-- Looping Background Video for Interactive Workspace -->
+        <div class="workspace-video-backdrop" aria-hidden="true">
+          <video
+            class="workspace-video-media"
+            src="https://res.cloudinary.com/cn82ghbp/video/upload/v1792766581/ed-and-ein-cowboy-bebop.3840x2160_rawfpp.mp4"
+            autoplay
+            loop
+            muted
+            playsinline
+            webkit-playsinline
+          ></video>
+          <div class="workspace-video-overlay"></div>
+        </div>
+
+        <div class="container" style="position: relative; z-index: 3;">
+          
+          <!-- Workspace Header -->
+          <div class="workspace-top-bar">
+            <div>
+              <h2 class="section-heading-main font-sans" style="font-weight: 700;">Interactive Workspace</h2>
+              <p class="section-sub-copy font-sans">Bring a real diff or select an example below, speak your reasoning, and inspect the evidence-backed pull request draft.</p>
+            </div>
+
+            <!-- Compact Example Loader -->
+            <div class="preset-select-wrap">
+              <span class="preset-select-label font-sans">Scenario:</span>
+              <select id="example-preset-select" class="preset-dropdown font-sans" aria-label="Select code example scenario">
+                <option value="rate-limiting">Auth Rate Limiter & Shared IP (auth/rateLimiter.ts)</option>
+                <option value="db-pooling">DB Connection Pool & Retry (db/poolManager.ts)</option>
+                <option value="stripe-webhook">Stripe Webhook Idempotency (billing/webhookHandler.ts)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Two-Column Workspace Grid -->
+          <div class="workspace-grid">
+            
+            <!-- Left Panel: Your Change & Spoken Reasoning -->
+            <div class="workspace-card">
+              
+              <!-- Tab Header: Git diff vs GitHub PR -->
+              <div class="card-tab-header">
+                <div class="tab-buttons-wrap" role="tablist">
+                  <button type="button" class="panel-tab-btn active" id="tab-btn-diff" role="tab" aria-selected="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    <span>Git diff</span>
+                  </button>
+                  <button type="button" class="panel-tab-btn" id="tab-btn-gh" role="tab" aria-selected="false">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 8v8M8 12h8"></path>
+                    </svg>
+                    <span>GitHub PR #142</span>
+                  </button>
+                </div>
+
+                <div>
+                  <button type="button" class="btn-header-ghost" id="btn-reset-diff">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                      <path d="M21 3v5h-5"></path>
+                    </svg>
+                    <span>Reset</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- File Name & Stat Header -->
+              <div class="file-meta-strip font-mono">
+                <span id="current-filename" style="font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                  </svg>
+                  <span>auth/rateLimiter.ts</span>
+                </span>
+                <span id="diff-stat-indicator" style="font-size: 11.5px; font-weight: 600; color: var(--status-success); background: var(--status-success-bg); padding: 2px 7px; border-radius: 4px;">+16 -4 lines</span>
+              </div>
+
+              <!-- Code Diff Scroll Box -->
+              <div class="diff-code-scroll font-mono" id="diff-code-container">
+                <!-- Dynamically loaded diff lines -->
+              </div>
+
+              <!-- Voice Reasoning Area -->
+              <div class="voice-box-container">
+                <div class="voice-box-header">
+                  <div class="voice-box-title font-sans">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    </svg>
+                    <span>Spoken Reasoning</span>
+                  </div>
+
+                  <div class="voice-controls-cluster">
+                    <!-- Sound Waveform Bars -->
+                    <div class="waveform-bar-cluster" id="waveform-bars" aria-hidden="true">
+                      <div class="audio-bar"></div>
+                      <div class="audio-bar"></div>
+                      <div class="audio-bar"></div>
+                      <div class="audio-bar"></div>
+                      <div class="audio-bar"></div>
+                      <div class="audio-bar"></div>
+                      <div class="audio-bar"></div>
+                      <div class="audio-bar"></div>
+                    </div>
+
+                    <!-- Circular Mic Button -->
+                    <button type="button" class="mic-button-circle" id="mic-toggle-btn" aria-label="Toggle voice dictation" title="Click to dictate spoken reasoning">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="voice-status-line" id="voice-status-indicator">
+                  Dictate your reasoning via Wispr Flow or edit the transcribed explanation:
+                </div>
+
+                <!-- Editable Spoken Context Textarea -->
+                <textarea
+                  id="spoken-reasoning-input"
+                  class="voice-textarea-field font-sans"
+                  placeholder="Explain why you made this change, what alternatives you considered, and what reviewers should know..."
+                  aria-label="Developer spoken rationale"
+                ></textarea>
+
+                <div class="voice-footnote-row font-sans">
+                  <span>Explain why you made this change, what alternatives you considered, and what reviewers should know.</span>
+                  <span style="font-weight: 500; color: var(--accent-indigo);">Dictate using Wispr Flow or type normally</span>
+                </div>
+              </div>
+
+              <!-- Generate Button Bar -->
+              <div class="generate-footer-bar">
+                <span style="font-size: 12.5px; color: var(--text-secondary);">Ready to synthesize diff and spoken rationale</span>
+                <button type="button" class="btn-generate-pr font-sans" id="btn-generate-pr">
+                  <svg id="generate-icon-sparkle" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                  <span id="generate-btn-text">Generate PR description</span>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Right Panel: Results (PR Description, Changelog, Flags) -->
+            <div class="workspace-card">
+              
+              <!-- Result Tabs Bar -->
+              <div class="card-tab-header">
+                <div class="tab-buttons-wrap" role="tablist">
+                  <button type="button" class="panel-tab-btn active" id="tab-result-pr" role="tab" aria-selected="true">
+                    <span>PR description</span>
+                  </button>
+                  <button type="button" class="panel-tab-btn" id="tab-result-changelog" role="tab" aria-selected="false">
+                    <span>Changelog</span>
+                  </button>
+                  <button type="button" class="panel-tab-btn" id="tab-result-flags" role="tab" aria-selected="false">
+                    <span>Flags</span>
+                    <span class="badge-counter" id="flags-count-badge">3</span>
+                  </button>
+                </div>
+
+                <div>
+                  <button type="button" class="btn-header-ghost" id="btn-copy-all-md" title="Copy entire PR description as Markdown">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span id="copy-all-btn-label">Copy all as Markdown</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Result Content Views -->
+              <div class="results-content-wrap" id="results-view-wrap">
+                
+                <!-- View 1: PR Description Sections -->
+                <div class="pr-desc-view font-sans" id="view-pr-desc" style="display: flex; flex-direction: column; gap: 14px;">
+                  
+                  <!-- Summary -->
+                  <div class="pr-section-block">
+                    <div class="pr-section-headline-bar">
+                      <span class="pr-section-label">Summary</span>
+                      <button type="button" class="btn-copy-snippet" data-copy-target="summary">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                    <div class="pr-section-body-text" id="res-summary">
+                      Refactor rate limiting from purely IP-based hashing to per-account token buckets for authenticated sessions, raising limits to 120 RPM while preserving 20 RPM IP fallbacks for anonymous routes.
+                    </div>
+                  </div>
+
+                  <!-- Why -->
+                  <div class="pr-section-block">
+                    <div class="pr-section-headline-bar">
+                      <span class="pr-section-label">Why</span>
+                      <button type="button" class="btn-copy-snippet" data-copy-target="why">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                    <div class="pr-section-body-text" id="res-why">
+                      Corporate VPNs and university shared egress IPs were triggering cascading 429s during morning login rushes, unfairly throttling distinct valid users who shared an external gateway address.
+                    </div>
+                  </div>
+
+                  <!-- Alternatives Considered -->
+                  <div class="pr-section-block">
+                    <div class="pr-section-headline-bar">
+                      <span class="pr-section-label">Alternatives Considered</span>
+                      <button type="button" class="btn-copy-snippet" data-copy-target="alternatives">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                    <div class="pr-section-body-text" id="res-alternatives">
+                      Evaluated distributed Redis sliding-window limiters; rejected for now due to additional network hop latency on latency-critical auth routes, but noted for v2 migration when cluster size expands.
+                    </div>
+                  </div>
+
+                  <!-- Risks and Testing -->
+                  <div class="pr-section-block">
+                    <div class="pr-section-headline-bar">
+                      <span class="pr-section-label">Risks and Testing</span>
+                      <button type="button" class="btn-copy-snippet" data-copy-target="risks">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                    <div class="pr-section-body-text" id="res-risks">
+                      Tested with simulated concurrent requests across 50 simulated user IDs on a shared IP mock. Risk of memory growth mitigated by 1-hour LRU purge interval.
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- View 2: Changelog Entries -->
+                <div class="changelog-view font-sans" id="view-changelog" style="display: none; flex-direction: column; gap: 14px;">
+                  <div class="pr-section-block">
+                    <div class="pr-section-headline-bar">
+                      <span class="pr-section-label">Release Notes</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;" id="changelog-entries">
+                      <!-- Populated via JS -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- View 3: Flags Differentiator -->
+                <div class="flags-view font-sans" id="view-flags" style="display: none; flex-direction: column; gap: 14px;">
+                  <div class="flags-callout-strip">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Flags are checks, not proof of correctness.</span>
+                    <span id="flags-tally" style="margin-left: auto; font-size: 11.5px; font-weight: 600; color: var(--accent-indigo); white-space: nowrap;">0 of 3 marked useful</span>
+                  </div>
+
+                  <div id="flags-list-container" style="display: flex; flex-direction: column; gap: 14px;">
+                    <!-- Dynamically populated evidence flags -->
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- How It Works Section -->
+      <section class="how-it-works-section" id="how-it-works" aria-label="How SpeakPR Works">
+        <div class="container">
+          <div class="center-section-head">
+            <!-- Short Preserved Character Font Heading -->
+            <h2 class="section-display-font-title font-cartoon">How it works</h2>
+            <p class="section-sub-copy font-sans" style="margin: 0 auto;">Three compact steps to turn raw Git diffs into review-ready pull requests.</p>
+          </div>
+
+          <div class="steps-3-grid font-sans">
+            <!-- Step 1 -->
+            <div class="step-feature-card">
+              <div class="step-digit-badge">1</div>
+              <h3 style="font-size: 17px; font-weight: 600; color: var(--text-primary);">Bring your diff</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.55;">
+                Paste your staged changes, branch diff, or link a GitHub PR. SpeakPR parses syntax, file paths, and AST modifications automatically.
+              </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-feature-card">
+              <div class="step-digit-badge">2</div>
+              <h3 style="font-size: 17px; font-weight: 600; color: var(--text-primary);">Explain your reasoning</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.55;">
+                Speak for 30 seconds into Wispr Flow or type normally. Explain your architecture decisions, edge cases, and alternatives considered.
+              </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-feature-card">
+              <div class="step-digit-badge">3</div>
+              <h3 style="font-size: 17px; font-weight: 600; color: var(--text-primary);">Review a clearer PR</h3>
+              <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.55;">
+                Receive structured PR summaries, customer-ready changelogs, and evidence-backed flags highlighting any discrepancies between diff and intent.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Why Voice? Comparison Section -->
+      <section class="why-voice-section" id="why-voice" aria-label="Why Voice Matters">
+        <div class="container">
+          <div class="center-section-head">
+            <!-- Short Preserved Character Font Heading -->
+            <h2 class="section-display-font-title font-cartoon">Why voice?</h2>
+            <p class="section-sub-copy font-sans" style="margin: 0 auto;">After three hours of debugging, nobody types four paragraphs of context. Speaking takes 25 seconds.</p>
+          </div>
+
+          <div class="comparison-2-grid font-sans">
+            <!-- Typical Before -->
+            <div class="comp-card">
+              <span class="comp-tag" style="background: var(--surface-secondary); color: var(--text-secondary);">Before SpeakPR</span>
+              <div style="font-size: 15px; line-height: 1.6; color: var(--text-secondary); font-style: italic;">
+                “Added rate limiting.”
+              </div>
+              <div style="font-size: 13px; color: var(--text-secondary); border-top: 1px solid var(--border-subtle); padding-top: 12px;">
+                Reviewers have to reverse-engineer why the author chose account buckets over IP hashes, which clusters were affected, and how to verify.
+              </div>
+            </div>
+
+            <!-- With SpeakPR -->
+            <div class="comp-card after-highlight">
+              <span class="comp-tag" style="background: var(--accent-glow); color: var(--accent-indigo);">With SpeakPR</span>
+              <div style="font-size: 15px; line-height: 1.6; font-weight: 500; color: var(--text-primary);">
+                “Added per-account rate limiting to reduce repeated authentication traffic without blocking users who share an IP address.”
+              </div>
+              <div style="font-size: 13px; color: var(--text-primary); border-top: 1px solid var(--border-subtle); padding-top: 12px;">
+                Reviewers receive instant context, design trade-offs, and verification flags right in the PR summary.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Refined Minimal Footer -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="container footer-content-row font-sans">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-weight: 700; color: var(--text-primary);">SpeakPR</span>
+          <span>—</span>
+          <span style="font-weight: 500; color: var(--text-primary);">Built by voice for the No Hands: Wispr Challenge.</span>
+        </div>
+        <div>
+          <span>© 2026 SpeakPR. Crafted with developer precision.</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Toast Notification Widget -->
+    <div class="toast-popup font-sans" id="toast-widget" role="status" aria-live="polite">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--status-success);">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span id="toast-text">Copied to clipboard</span>
+    </div>
+
+    <!-- Vanilla JavaScript for Video Autoplay and Prototype Interactions -->
+    <script>
+      (function() {
+        'use strict';
+
+        // 1. Ensure Background Videos Loop Continuously
+        const backgroundVideos = document.querySelectorAll('.hero-video-media, .workspace-video-media');
+        backgroundVideos.forEach(function(video) {
+          video.play().catch(function() {
+            window.addEventListener('click', function() {
+              video.play();
+            }, { once: true });
+          });
+        });
+
+        // 2. Realistic Developer Scenario Presets (Diff, Reasoning, Results)
+        const SCENARIOS = {
+          'rate-limiting': {
+            filename: 'auth/rateLimiter.ts',
+            statBadge: '+16 -4 lines',
+            rawDiff: `diff --git a/auth/rateLimiter.ts b/auth/rateLimiter.ts
+--- a/auth/rateLimiter.ts
++++ b/auth/rateLimiter.ts
+@@ -32,4 +32,16 @@ export async function checkRateLimit(req: Request) {
+   const route = req.path;
+-  const clientIp = req.headers['x-forwarded-for'] || req.ip;
+-  return rateLimiter.consume(clientIp, 1);
++  const accountId = req.auth?.user?.id;
++  // Fallback to IP only for unauthenticated public routes
++  const key = accountId ? \`acc:\${accountId}\` : \`ip:\${req.ip}\`;
++  const limit = accountId ? 120 : 20; // 120 rpm for members, 20 for anon
++  
++  try {
++    await rateLimiter.consume(key, 1);
++    return { allowed: true };
++  } catch (rej) {
++    logger.warn('Rate limit exceeded', { key, remaining: rej.msBeforeNext });
++    return { allowed: false, retryAfter: Math.ceil(rej.msBeforeNext / 1000) };
++  }
+ }`,
+            spokenReasoning: "We had an ongoing incident where university campus users sharing an egress IP kept hitting cascading 429s during sign-in spikes. I changed the rate limit bucket key to partition on user account ID for authenticated sessions and boosted their quota to 120 rpm, keeping IP-based limits only for public unauthenticated endpoints. We considered Redis token buckets with sliding windows, but in-process memory is fine for our current single-region cluster. Reviewers should check whether retryAfter in seconds matches the API spec.",
+            summary: "Refactor rate limiting from purely IP-based hashing to per-account token buckets for authenticated sessions, raising limits to 120 RPM while preserving 20 RPM IP fallbacks for anonymous routes.",
+            why: "Corporate VPNs and university shared egress IPs were triggering cascading 429s during morning login rushes, unfairly throttling distinct valid users who shared an external gateway address.",
+            alternatives: "Evaluated distributed Redis sliding-window limiters; rejected for now due to additional network hop latency on latency-critical auth routes, but noted for v2 migration when cluster size expands.",
+            risks: "Tested with simulated concurrent requests across 50 simulated user IDs on a shared IP mock. Risk of memory growth mitigated by 1-hour LRU purge interval.",
+            changelog: "Increased authenticated API rate ceiling to 120 req/min with per-account token buckets.",
+            flags: [
+              {
+                type: 'Change not mentioned',
+                location: 'auth/rateLimiter.ts:38',
+                message: "Spoken reasoning states IP-only fallback is preserved for public unauthenticated endpoints, but req.auth?.user?.id may evaluate undefined on malformed JWT headers without triggering early 401 rejection.",
+                evidence: "const key = accountId ? \`acc:\${accountId}\` : \`ip:\${req.ip}\`;"
+              },
+              {
+                type: 'Claim without matching change',
+                location: 'tests/rateLimiter.test.ts:45',
+                message: "Reasoning mentions testing 50 concurrent simulated user sessions, but the commit diff does not modify or introduce test assertions for retryAfter headers.",
+                evidence: "return { allowed: false, retryAfter: Math.ceil(rej.msBeforeNext / 1000) };"
+              },
+              {
+                type: 'Change not mentioned',
+                location: 'auth/rateLimiter.ts:42',
+                message: "In-process memory store requires shared sticky sessions behind AWS ALB; otherwise round-robin requests bypass per-node counts.",
+                evidence: "await rateLimiter.consume(key, 1);"
+              }
+            ]
+          },
+          'db-pooling': {
+            filename: 'db/poolManager.ts',
+            statBadge: '+12 -2 lines',
+            rawDiff: `diff --git a/db/poolManager.ts b/db/poolManager.ts
+--- a/db/poolManager.ts
++++ b/db/poolManager.ts
+@@ -18,3 +18,15 @@ export class PoolManager {
+-  async getConnection() {
+-    return this.pool.acquire();
++  async getConnection(maxRetries = 3) {
++    let attempt = 0;
++    while (attempt < maxRetries) {
++      try {
++        return await this.pool.acquire({ timeoutMs: 2500 });
++      } catch (err) {
++        attempt++;
++        if (attempt >= maxRetries) throw new PoolExhaustedError(err);
++        const jitter = Math.random() * 150;
++        await sleep(Math.pow(2, attempt) * 100 + jitter);
++      }
++    }
++  }`,
+            spokenReasoning: "Under sudden database failovers, background workers were instantly throwing pool acquire errors instead of giving RDS 3-4 seconds to complete replica promotion. Added exponential backoff with full jitter up to 3 retries. Considered increasing the base pool size, but that caused connection starvation on Postgres during migrations.",
+            summary: "Implement exponential backoff retry with full jitter on database pool acquisition to withstand transient RDS replica promotions and failovers.",
+            why: "Transient primary replica switches caused worker processes to immediately crash instead of waiting out the 2-3 second failover window.",
+            alternatives: "Considered scaling max pool size from 20 to 50; rejected because multiple container replicas would saturate PostgreSQL max_connections during peak bursts.",
+            risks: "Under sustained database outages, cumulative retry latency may delay worker timeout responses. Monitored with new PoolExhaustedError telemetry.",
+            changelog: "Added automatic retry with jitter for transient database pool acquisition timeouts.",
+            flags: [
+              {
+                type: 'Change not mentioned',
+                location: 'db/poolManager.ts:25',
+                message: "Combined retry delay (up to 1400ms sleep + 3x 2500ms acquire timeout) can exceed upstream HTTP gateway timeout of 5000ms.",
+                evidence: "return await this.pool.acquire({ timeoutMs: 2500 });"
+              },
+              {
+                type: 'Claim without matching change',
+                location: 'db/poolManager.ts:27',
+                message: "Spoken rationale mentions monitoring via new PoolExhaustedError telemetry, but metric emission calls are absent from catch block.",
+                evidence: "attempt++;"
+              }
+            ]
+          },
+          'stripe-webhook': {
+            filename: 'billing/webhookHandler.ts',
+            statBadge: '+14 -1 lines',
+            rawDiff: `diff --git a/billing/webhookHandler.ts b/billing/webhookHandler.ts
+--- a/billing/webhookHandler.ts
++++ b/billing/webhookHandler.ts
+@@ -46,2 +46,15 @@ export async function handleStripeEvent(event: Stripe.Event) {
+-  await processSubscriptionUpdate(event.data.object);
++  const eventId = event.id;
++  const lockAcquired = await redis.set(\`evt:\${eventId}\`, 'processing', 'NX', 'EX', 120);
++  if (!lockAcquired) {
++    logger.info('Duplicate webhook skipped', { eventId });
++    return { received: true, duplicate: true };
++  }
++  try {
++    await processSubscriptionUpdate(event.data.object);
++    await redis.set(\`evt:\${eventId}\`, 'completed', 'KEEPTTL');
++  } catch (err) {
++    await redis.del(\`evt:\${eventId}\`);
++    throw err;
++  }
++}`,
+            spokenReasoning: "Stripe sent us duplicate invoice.payment_succeeded events during their scheduled maintenance window which caused two duplicate credit grant jobs to run. Added atomic Redis SET NX with a 2-minute lock. Considered database-level unique constraint on payment_intent_id, but the invoice webhook payload doesn't always contain payment intent on zero-dollar renewals.",
+            summary: "Add Redis-backed distributed lock with idempotency check for incoming Stripe webhook events to prevent duplicate subscription and credit processing.",
+            why: "Stripe retry deliveries during network blips were executing duplicate credit grant mutations.",
+            alternatives: "Evaluated Postgres table unique constraints; discarded because zero-dollar trial renewals omit payment_intent IDs.",
+            risks: "Requires active Redis connection. Uncaught exceptions release the key to permit valid Stripe exponential retries.",
+            changelog: "Protected billing webhooks against duplicate Stripe event deliveries with 120s Redis lock.",
+            flags: [
+              {
+                type: 'Change not mentioned',
+                location: 'billing/webhookHandler.ts:49',
+                message: "Lock duration is set to 120 seconds. If subscription downstream sync encounters slow external CRM webhooks, key may expire mid-flight.",
+                evidence: "await redis.set(\`evt:\${eventId}\`, 'processing', 'NX', 'EX', 120);"
+              },
+              {
+                type: 'Claim without matching change',
+                location: 'billing/webhookHandler.ts:58',
+                message: "Developer claimed zero-dollar trial renewals omit payment_intent IDs, but no guard check handles null invoice IDs in payload.",
+                evidence: "await redis.del(\`evt:\${eventId}\`);"
+              }
+            ]
+          }
+        };
+
+        // State
+        let currentKey = 'rate-limiting';
+        let currentDiffText = SCENARIOS['rate-limiting'].rawDiff;
+        let activeTab = 'diff'; // 'diff' | 'gh'
+        let flagMarks = {}; // cardIdx -> 'useful' | 'noise'
+
+        // Elements
+        const diffBox = document.getElementById('diff-code-container');
+        const filenameTag = document.getElementById('current-filename');
+        const statIndicator = document.getElementById('diff-stat-indicator');
+        const spokenInput = document.getElementById('spoken-reasoning-input');
+        const selectScenario = document.getElementById('example-preset-select');
+        const resetDiffBtn = document.getElementById('btn-reset-diff');
+
+        const tabDiff = document.getElementById('tab-btn-diff');
+        const tabGH = document.getElementById('tab-btn-gh');
+
+        const micBtn = document.getElementById('mic-toggle-btn');
+        const waveform = document.getElementById('waveform-bars');
+
+        const btnGenerate = document.getElementById('btn-generate-pr');
+        const generateBtnText = document.getElementById('generate-btn-text');
+        const generateIcon = document.getElementById('generate-icon-sparkle');
+
+        const tabPR = document.getElementById('tab-result-pr');
+        const tabChangelog = document.getElementById('tab-result-changelog');
+        const tabFlags = document.getElementById('tab-result-flags');
+        const flagsCountBadge = document.getElementById('flags-count-badge');
+
+        const viewPR = document.getElementById('view-pr-desc');
+        const viewChangelog = document.getElementById('view-changelog');
+        const viewFlags = document.getElementById('view-flags');
+        const flagsList = document.getElementById('flags-list-container');
+        const changelogList = document.getElementById('changelog-entries');
+
+        const resSummary = document.getElementById('res-summary');
+        const resWhy = document.getElementById('res-why');
+        const resAlternatives = document.getElementById('res-alternatives');
+        const resRisks = document.getElementById('res-risks');
+
+        const copyAllBtn = document.getElementById('btn-copy-all-md');
+        const copyAllLabel = document.getElementById('copy-all-btn-label');
+        const toast = document.getElementById('toast-widget');
+        const toastText = document.getElementById('toast-text');
+
+        const themeBtn = document.getElementById('theme-toggle');
+        const sunIcon = themeBtn ? themeBtn.querySelector('.sun-icon') : null;
+        const moonIcon = themeBtn ? themeBtn.querySelector('.moon-icon') : null;
+
+        // 3. Multi-File Unified Diff Parser
+        // Accurately ignores +++ and --- metadata headers from additions/deletions counts
+        function parseMultiFileDiff(rawText) {
+          if (!rawText || !rawText.trim()) {
+            return {
+              files: [],
+              totalAdditions: 0,
+              totalDeletions: 0,
+              statBadge: '+0 -0 lines',
+              primaryFilename: 'No file selected'
+            };
+          }
+
+          const lines = rawText.split('\n');
+          const files = [];
+          let currentFile = null;
+          let totalAdditions = 0;
+          let totalDeletions = 0;
+
+          function startNewFile(fn) {
+            if (currentFile) {
+              files.push(currentFile);
+            }
+            currentFile = {
+              filename: fn || 'patch.diff',
+              additions: 0,
+              deletions: 0,
+              lines: [],
+              currentLineNo: 1
+            };
+          }
+
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+
+            if (line.startsWith('diff --git a/')) {
+              const match = line.match(/diff --git a\/(.+?) b\//);
+              startNewFile(match ? match[1] : 'file');
+              currentFile.lines.push({ type: 'header', ln: '', text: line });
+              continue;
+            }
+
+            if (line.startsWith('--- a/')) {
+              if (!currentFile) {
+                startNewFile(line.slice(6).trim());
+              }
+              currentFile.lines.push({ type: 'header', ln: '', text: line });
+              continue;
+            }
+
+            if (line.startsWith('+++ b/')) {
+              const fn = line.slice(6).trim();
+              if (!currentFile) {
+                startNewFile(fn);
+              } else if (currentFile.filename === 'patch.diff' || currentFile.filename === 'file') {
+                currentFile.filename = fn;
+              }
+              currentFile.lines.push({ type: 'header', ln: '', text: line });
+              continue;
+            }
+
+            if (!currentFile) {
+              startNewFile('patch.diff');
+            }
+
+            const hunkMatch = line.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
+            if (hunkMatch) {
+              currentFile.currentLineNo = parseInt(hunkMatch[1], 10);
+              currentFile.lines.push({ type: 'hunk', ln: '..', text: line });
+              continue;
+            }
+
+            // Code additions and deletions (excluding diff file header lines +++ and ---)
+            if (line.startsWith('+') && !line.startsWith('+++')) {
+              currentFile.additions++;
+              totalAdditions++;
+              currentFile.lines.push({ type: 'add', ln: String(currentFile.currentLineNo++), text: line });
+            } else if (line.startsWith('-') && !line.startsWith('---')) {
+              currentFile.deletions++;
+              totalDeletions++;
+              currentFile.lines.push({ type: 'del', ln: '..', text: line });
+            } else if (line.startsWith('index ') || line.startsWith('old mode') || line.startsWith('new mode') || line.startsWith('\\ No newline')) {
+              currentFile.lines.push({ type: 'header', ln: '', text: line });
+            } else {
+              currentFile.lines.push({ type: 'context', ln: String(currentFile.currentLineNo++), text: line });
+            }
+          }
+
+          if (currentFile) {
+            files.push(currentFile);
+          }
+
+          const primaryFilename = files.length === 1 
+            ? files[0].filename 
+            : files.length > 1 
+              ? `${files[0].filename} (+${files.length - 1} more)` 
+              : 'No file selected';
+
+          return {
+            files,
+            totalAdditions,
+            totalDeletions,
+            statBadge: `+${totalAdditions} -${totalDeletions} lines`,
+            primaryFilename
+          };
+        }
+
+        // 4. Render Git Diff Tab
+        // Contains an interactive paste/edit textarea that live-parses into the syntax-highlighted diff viewer
+        function renderGitDiffTab(rawDiff) {
+          activeTab = 'diff';
+          tabDiff.classList.add('active');
+          tabGH.classList.remove('active');
+          tabDiff.setAttribute('aria-selected', 'true');
+          tabGH.setAttribute('aria-selected', 'false');
+
+          currentDiffText = rawDiff || '';
+          const parsed = parseMultiFileDiff(currentDiffText);
+          filenameTag.querySelector('span').textContent = parsed.primaryFilename;
+          statIndicator.textContent = parsed.statBadge;
+
+          let filesHtml = '';
+          if (parsed.files.length === 0) {
+            filesHtml = '<div style="padding: 24px 12px; text-align: center; color: #64748B; font-size: 12px;">Paste any unified diff in the box above to inspect code changes.</div>';
+          } else {
+            parsed.files.forEach(function(file) {
+              filesHtml += '<div style="margin-bottom: 12px;">';
+              if (parsed.files.length > 1) {
+                filesHtml += `
+                  <div style="padding: 4px 8px; background: rgba(255, 255, 255, 0.05); font-weight: 600; font-size: 11.5px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 4px; display: flex; justify-content: space-between; color: #E2E8F0;">
+                    <span>${escapeHtml(file.filename)}</span>
+                    <span style="font-size: 11px; color: var(--status-success);">+${file.additions} -${file.deletions}</span>
+                  </div>
+                `;
+              }
+              filesHtml += '<pre style="margin: 0;">';
+              file.lines.forEach(function(l) {
+                let cls = '';
+                if (l.type === 'add') cls = 'diff-add';
+                else if (l.type === 'del') cls = 'diff-del';
+                else if (l.type === 'hunk') cls = 'diff-line-no';
+                else if (l.type === 'header') cls = 'diff-line-no';
+                filesHtml += `<div class="diff-row"><span class="diff-line-no">${l.ln}</span><span class="${cls}">${escapeHtml(l.text)}</span></div>`;
+              });
+              filesHtml += '</pre></div>';
+            });
+          }
+
+          diffBox.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <textarea
+                id="git-diff-textarea"
+                class="font-mono"
+                style="width: 100%; min-height: 52px; max-height: 80px; background: rgba(0, 0, 0, 0.28); border: 1px dashed rgba(255, 255, 255, 0.16); border-radius: 4px; padding: 6px 10px; color: #E2E8F0; font-size: 11.5px; line-height: 1.5; resize: vertical; box-sizing: border-box;"
+                placeholder="Paste any unified diff here (live parsed into viewer below)..."
+                aria-label="Unified Git diff input"
+              >${escapeHtml(currentDiffText)}</textarea>
+              <div id="diff-lines-render-area">
+                ${filesHtml}
+              </div>
+            </div>
+          `;
+
+          const textarea = document.getElementById('git-diff-textarea');
+          if (textarea) {
+            textarea.addEventListener('input', function() {
+              currentDiffText = textarea.value;
+              currentKey = null;
+              if (btnGenerate) btnGenerate.disabled = false;
+              const liveParsed = parseMultiFileDiff(currentDiffText);
+              filenameTag.querySelector('span').textContent = liveParsed.primaryFilename;
+              statIndicator.textContent = liveParsed.statBadge;
+
+              let updatedHtml = '';
+              if (liveParsed.files.length === 0) {
+                updatedHtml = '<div style="padding: 24px 12px; text-align: center; color: #64748B; font-size: 12px;">Paste any unified diff in the box above to inspect code changes.</div>';
+              } else {
+                liveParsed.files.forEach(function(file) {
+                  updatedHtml += '<div style="margin-bottom: 12px;">';
+                  if (liveParsed.files.length > 1) {
+                    updatedHtml += `
+                      <div style="padding: 4px 8px; background: rgba(255, 255, 255, 0.05); font-weight: 600; font-size: 11.5px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 4px; display: flex; justify-content: space-between; color: #E2E8F0;">
+                        <span>${escapeHtml(file.filename)}</span>
+                        <span style="font-size: 11px; color: var(--status-success);">+${file.additions} -${file.deletions}</span>
+                      </div>
+                    `;
+                  }
+                  updatedHtml += '<pre style="margin: 0;">';
+                  file.lines.forEach(function(l) {
+                    let cls = '';
+                    if (l.type === 'add') cls = 'diff-add';
+                    else if (l.type === 'del') cls = 'diff-del';
+                    else if (l.type === 'hunk') cls = 'diff-line-no';
+                    else if (l.type === 'header') cls = 'diff-line-no';
+                    updatedHtml += `<div class="diff-row"><span class="diff-line-no">${l.ln}</span><span class="${cls}">${escapeHtml(l.text)}</span></div>`;
+                  });
+                  updatedHtml += '</pre></div>';
+                });
+              }
+
+              const renderArea = document.getElementById('diff-lines-render-area');
+              if (renderArea) renderArea.innerHTML = updatedHtml;
+            });
+          }
+        }
+
+        // Global Paste Helper for unified diffs
+        document.addEventListener('paste', function(e) {
+          if (activeTab === 'gh') return;
+          if (document.activeElement === spokenInput) return;
+          const pasted = (e.clipboardData || window.clipboardData).getData('text');
+          if (pasted && (pasted.includes('diff --git') || pasted.includes('--- a/') || pasted.includes('+++ b/') || pasted.includes('@@ -'))) {
+            currentDiffText = pasted;
+            currentKey = null;
+            if (btnGenerate) btnGenerate.disabled = false;
+            renderGitDiffTab(pasted);
+            showToast("Parsed pasted Git diff: " + statIndicator.textContent);
+          }
+        });
+
+        // 5. GitHub PR Tab
+        function renderGitHubPRTab() {
+          activeTab = 'gh';
+          tabGH.classList.add('active');
+          tabDiff.classList.remove('active');
+          tabGH.setAttribute('aria-selected', 'true');
+          tabDiff.setAttribute('aria-selected', 'false');
+
+          diffBox.innerHTML = `
+            <div style="padding: 14px 10px; display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; color: #E2E8F0; font-size: 12.5px;">Fetch Public GitHub Pull Request Diff</span>
+                <span style="font-size: 11px; color: #94A3B8;">via GitHub API</span>
+              </div>
+              <p style="font-size: 11.5px; color: #94A3B8; margin: 0; line-height: 1.4;">
+                Enter a public GitHub PR link (e.g. <code>https://github.com/octocat/Hello-World/pull/6</code>):
+              </p>
+              <form id="gh-fetch-form" style="display: flex; gap: 8px;">
+                <input
+                  type="text"
+                  id="gh-pr-url-input"
+                  class="font-mono"
+                  style="flex: 1; height: 36px; padding: 6px 10px; font-size: 11.5px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 4px; color: #E2E8F0;"
+                  placeholder="https://github.com/owner/repo/pull/123"
+                  value="https://github.com/octocat/Hello-World/pull/6"
+                />
+                <button type="submit" id="gh-fetch-submit-btn" class="btn-generate-pr font-sans" style="padding: 0 14px; height: 36px; font-size: 12px; white-space: nowrap;">
+                  <span>Fetch diff</span>
+                </button>
+              </form>
+              <div id="gh-fetch-feedback" style="font-size: 11.5px; line-height: 1.4; display: none;"></div>
+            </div>
+          `;
+
+          const form = document.getElementById('gh-fetch-form');
+          const input = document.getElementById('gh-pr-url-input');
+          const btn = document.getElementById('gh-fetch-submit-btn');
+          const feedback = document.getElementById('gh-fetch-feedback');
+
+          form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const url = input.value.trim();
+
+            // Validate format
+            const match = url.match(/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/i);
+            if (!match) {
+              feedback.style.display = 'block';
+              feedback.innerHTML = '<div style="color: #ef4444; padding: 6px 8px; border-radius: 4px; background: rgba(239, 68, 68, 0.15);">Invalid link format. Expected https://github.com/owner/repo/pull/123</div>';
+              return;
+            }
+
+            btn.disabled = true;
+            btn.querySelector('span').textContent = 'Fetching...';
+            feedback.style.display = 'block';
+            feedback.innerHTML = '<div style="color: var(--accent-indigo); padding: 6px 8px;">Fetching diff from GitHub API...</div>';
+
+            try {
+              const res = await fetch('/api/github-diff', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+              });
+
+              const data = await res.json();
+              if (!res.ok) {
+                throw new Error(data.error || 'Failed to fetch PR diff.');
+              }
+
+              // Update GitHub PR tab text
+              const tabSpan = tabGH.querySelector('span');
+              if (tabSpan) tabSpan.textContent = `GitHub PR #${data.prNumber}`;
+
+              currentDiffText = data.diff;
+              currentKey = null;
+              if (btnGenerate) btnGenerate.disabled = false;
+
+              // Load the fetched diff into the same diff viewer
+              renderGitDiffTab(data.diff);
+
+              let notice = '';
+              if (data.wasShortened) {
+                notice = '<div style="background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3); color: #eab308; padding: 6px 10px; border-radius: 4px; font-size: 11px; margin-bottom: 8px;">⚠️ Large diff shortened to first 60,000 characters for analysis.</div>';
+                showToast("Large PR diff shortened to first 60,000 characters");
+              } else {
+                showToast(`✓ Loaded PR #${data.prNumber} (+${data.additions} -${data.deletions})`);
+              }
+
+              if (notice) {
+                diffBox.insertAdjacentHTML('afterbegin', notice);
+              }
+            } catch (err) {
+              feedback.style.display = 'block';
+              feedback.innerHTML = `
+                <div style="color: #ef4444; padding: 8px 10px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                  <span>${escapeHtml(err.message)}</span>
+                  <button type="button" class="btn-retry-gh" style="background: rgba(239, 68, 68, 0.25); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; font-weight: 600;">Retry</button>
+                </div>
+              `;
+              const retryBtn = feedback.querySelector('.btn-retry-gh');
+              if (retryBtn) {
+                retryBtn.addEventListener('click', function() {
+                  form.dispatchEvent(new Event('submit'));
+                });
+              }
+            } finally {
+              btn.disabled = false;
+              btn.querySelector('span').textContent = 'Fetch diff';
+            }
+          });
+        }
+
+        if (tabDiff) tabDiff.addEventListener('click', function() { renderGitDiffTab(currentDiffText); });
+        if (tabGH) tabGH.addEventListener('click', renderGitHubPRTab);
+
+        // 6. Reset with 2-Click Quick Confirmation (no popups/modals)
+        let resetConfirming = false;
+        let resetTimeout = null;
+
+        if (resetDiffBtn) {
+          resetDiffBtn.addEventListener('click', function() {
+            const btnSpan = resetDiffBtn.querySelector('span');
+            if (!resetConfirming) {
+              resetConfirming = true;
+              if (btnSpan) btnSpan.textContent = 'Confirm?';
+              resetDiffBtn.style.color = 'var(--status-warning, #f59e0b)';
+              showToast('Click Reset again to confirm clearing workspace');
+              resetTimeout = setTimeout(function() {
+                resetConfirming = false;
+                if (btnSpan) btnSpan.textContent = 'Reset';
+                resetDiffBtn.style.color = '';
+              }, 3500);
+              return;
+            }
+
+            // Confirmed reset
+            clearTimeout(resetTimeout);
+            resetConfirming = false;
+            if (btnSpan) btnSpan.textContent = 'Reset';
+            resetDiffBtn.style.color = '';
+
+            currentDiffText = '';
+            spokenInput.value = '';
+            currentKey = null;
+            if (btnGenerate) btnGenerate.disabled = false;
+            if (typeof stopAndReleaseMic === 'function') stopAndReleaseMic();
+            filenameTag.querySelector('span').textContent = 'No file selected';
+            statIndicator.textContent = '+0 -0 lines';
+
+            renderGitDiffTab('');
+
+            resSummary.textContent = 'PR description will appear here after generation.';
+            resWhy.textContent = 'Context and rationale will be displayed here.';
+            resAlternatives.textContent = 'Alternatives considered will be listed here.';
+            resRisks.textContent = 'Risks and testing verification will appear here.';
+
+            changelogList.innerHTML = '<div style="color: var(--text-muted); font-size: 12.5px; padding: 12px 0;">No changelog entries yet.</div>';
+            flagsCountBadge.textContent = '0';
+            flagsList.innerHTML = '<div style="color: var(--text-muted); font-size: 12.5px; padding: 12px 0;">No flags detected.</div>';
+            updateFlagsTally(0, 0);
+
+            document.querySelectorAll('.gen-error-banner').forEach(el => el.remove());
+            showToast('Workspace cleared');
+          });
+        }
+
+        // 7. Render Flags & Live Tally
+        function updateFlagsTally(useful, total) {
+          const tallyEl = document.getElementById('flags-tally');
+          if (tallyEl) {
+            tallyEl.textContent = `${useful} of ${total} marked useful`;
+          }
+        }
+
+        function recalculateTally() {
+          const total = flagsList.querySelectorAll('.flag-item-card').length;
+          const useful = flagsList.querySelectorAll('.btn-useful-feedback.active-useful').length;
+          updateFlagsTally(useful, total);
+        }
+
+        function renderFlags(scenario) {
+          renderFlagsList(scenario.flags || []);
+        }
+
+        function renderFlagsList(flags) {
+          if (!flagsList) return;
+          flagMarks = {};
+          flagsCountBadge.textContent = flags.length;
+          updateFlagsTally(0, flags.length);
+
+          if (flags.length === 0) {
+            flagsList.innerHTML = '<div style="padding: 24px 16px; text-align: center; color: var(--text-muted); font-size: 13px;">No review flags detected. Diff matches reasoning.</div>';
+            return;
+          }
+
+          let html = '';
+          flags.forEach(function(flag, idx) {
+            const badgeClass = flag.type === 'Change not mentioned' ? 'badge-warn' : 'badge-info';
+            const location = flag.location || (flag.type === 'Change not mentioned' ? 'Diff inspection' : 'Reasoning claim');
+            const message = flag.message || flag.explanation || '';
+            const evidence = flag.evidence || '';
+
+            html += `
+              <div class="flag-item-card" data-idx="${idx}">
+                <div class="flag-header-line">
+                  <span class="flag-type-tag ${badgeClass}">${escapeHtml(flag.type)}</span>
+                  <span style="font-size: 12px; color: var(--text-secondary);" class="font-mono">${escapeHtml(location)}</span>
+                </div>
+                <div style="font-size: 13.5px; color: var(--text-primary); line-height: 1.5;">
+                  ${escapeHtml(message)}
+                </div>
+                ${evidence ? `<div class="flag-code-quote font-mono">${escapeHtml(evidence)}</div>` : ''}
+                <div class="flag-actions-row">
+                  <span style="font-size: 11.5px; color: var(--text-muted); margin-right: auto;">Useful finding?</span>
+                  <button type="button" class="btn-feedback-action btn-useful-feedback" aria-label="Mark check as useful">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                    <span>Useful</span>
+                  </button>
+                  <button type="button" class="btn-feedback-action btn-noise-feedback" aria-label="Mark check as noise">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+                    <span>Noise</span>
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+          flagsList.innerHTML = html;
+
+          // Wire Useful / Noise toggling
+          flagsList.querySelectorAll('.flag-item-card').forEach(function(card) {
+            const usefulBtn = card.querySelector('.btn-useful-feedback');
+            const noiseBtn = card.querySelector('.btn-noise-feedback');
+            const idx = card.getAttribute('data-idx');
+
+            usefulBtn.addEventListener('click', function() {
+              if (usefulBtn.classList.contains('active-useful')) {
+                usefulBtn.classList.remove('active-useful');
+                delete flagMarks[idx];
+              } else {
+                usefulBtn.classList.add('active-useful');
+                noiseBtn.classList.remove('active-noise');
+                flagMarks[idx] = 'useful';
+                showToast("Marked check as useful");
+              }
+              recalculateTally();
+            });
+
+            noiseBtn.addEventListener('click', function() {
+              if (noiseBtn.classList.contains('active-noise')) {
+                noiseBtn.classList.remove('active-noise');
+                delete flagMarks[idx];
+              } else {
+                noiseBtn.classList.add('active-noise');
+                usefulBtn.classList.remove('active-useful');
+                flagMarks[idx] = 'noise';
+                showToast("Marked check as noise");
+              }
+              recalculateTally();
+            });
+          });
+        }
+
+        // 8. Render Changelog
+        function renderChangelog(scenario) {
+          if (!changelogList) return;
+          let html = '';
+          const items = Array.isArray(scenario.changelog) ? scenario.changelog : [scenario.changelog];
+          items.filter(Boolean).forEach(function(item) {
+            html += `
+              <div style="display: flex; gap: 10px; font-size: 13.5px; color: var(--text-primary); line-height: 1.5;">
+                <span style="color: var(--accent-indigo); font-weight: 700;">•</span>
+                <span>${escapeHtml(item)}</span>
+              </div>
+            `;
+          });
+          changelogList.innerHTML = html || '<div style="color: var(--text-muted); font-size: 13px;">No changelog entry generated.</div>';
+        }
+
+        // 9. Load Complete Scenario
+        function loadScenario(key) {
+          currentKey = key;
+          const sc = SCENARIOS[key] || SCENARIOS['rate-limiting'];
+          renderGitDiffTab(sc.rawDiff);
+          spokenInput.value = sc.spokenReasoning;
+          resSummary.textContent = sc.summary;
+          resWhy.textContent = sc.why;
+          resAlternatives.textContent = sc.alternatives;
+          resRisks.textContent = sc.risks;
+          renderChangelog(sc);
+          renderFlags(sc);
+        }
+
+        if (selectScenario) {
+          selectScenario.addEventListener('change', function() {
+            loadScenario(this.value);
+            showToast("Loaded scenario: " + SCENARIOS[this.value].filename);
+          });
+        }
+
+        // 10. Voice Dictation & Microphone Audio Engine
+        const voiceStatusIndicator = document.getElementById('voice-status-indicator');
+        const defaultVoiceStatusText = "Dictate your reasoning via Wispr Flow or edit the transcribed explanation:";
+
+        let isListening = false;
+        let speechRecognizer = null;
+        let mediaStream = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let speechBaseText = '';
+
+        function setMicListeningState(listening, statusMsg) {
+          if (listening) {
+            isListening = true;
+            if (micBtn) micBtn.classList.add('listening');
+            if (waveform) waveform.classList.add('listening');
+            if (voiceStatusIndicator && statusMsg) {
+              voiceStatusIndicator.textContent = statusMsg;
+            }
+          } else {
+            isListening = false;
+            if (micBtn) micBtn.classList.remove('listening');
+            if (waveform) waveform.classList.remove('listening');
+            if (voiceStatusIndicator) {
+              voiceStatusIndicator.textContent = defaultVoiceStatusText;
+            }
+          }
+        }
+
+        function stopAndReleaseMic() {
+          if (speechRecognizer) {
+            try {
+              speechRecognizer.onresult = null;
+              speechRecognizer.onerror = null;
+              speechRecognizer.onend = null;
+              speechRecognizer.stop();
+            } catch (e) {}
+            speechRecognizer = null;
+          }
+
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            try {
+              mediaRecorder.stop();
+            } catch (e) {}
+          }
+          mediaRecorder = null;
+
+          if (mediaStream) {
+            try {
+              mediaStream.getTracks().forEach(function(track) {
+                track.stop();
+              });
+            } catch (e) {}
+              mediaStream = null;
+          }
+
+          setMicListeningState(false);
+        }
+
+        // MediaRecorder fallback using POST /api/transcribe
+        async function startMediaRecorderFallback() {
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            showToast("Microphone and speech recognition not supported in this browser.");
+            setMicListeningState(false);
+            return;
+          }
+
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaStream = stream;
+            audioChunks = [];
+
+            const mime = (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm'))
+              ? 'audio/webm'
+              : ((typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/mp4')) ? 'audio/mp4' : '');
+            
+            mediaRecorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = function(e) {
+              if (e.data && e.data.size > 0) {
+                audioChunks.push(e.data);
+              }
+            };
+
+            mediaRecorder.onstop = async function() {
+              if (mediaStream) {
+                mediaStream.getTracks().forEach(function(t) { t.stop(); });
+                mediaStream = null;
+              }
+
+              if (audioChunks.length === 0) {
+                setMicListeningState(false);
+                return;
+              }
+
+              const audioBlob = new Blob(audioChunks, { type: mediaRecorder ? (mediaRecorder.mimeType || 'audio/webm') : 'audio/webm' });
+              audioChunks = [];
+
+              if (voiceStatusIndicator) {
+                voiceStatusIndicator.textContent = "Transcribing audio with Gemini...";
+              }
+
+              try {
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = async function() {
+                  const base64Data = reader.result;
+                  try {
+                    const resp = await fetch('/api/transcribe', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        audio: base64Data,
+                        mimeType: audioBlob.type || 'audio/webm'
+                      })
+                    });
+
+                    const data = await resp.json();
+                    if (!resp.ok) {
+                      throw new Error(data.error || 'Failed to transcribe audio.');
+                    }
+
+                    const transcribed = data.text ? data.text.trim() : '';
+                    if (transcribed) {
+                      const current = spokenInput ? spokenInput.value.trim() : '';
+                      spokenInput.value = current ? (current + ' ' + transcribed) : transcribed;
+                      currentKey = null;
+                      if (btnGenerate) btnGenerate.disabled = false;
+                      showToast("✓ Transcribed speech added to reasoning");
+                    } else {
+                      showToast("No speech detected in recorded audio.");
+                    }
+                  } catch (err) {
+                    console.error('Transcription error:', err);
+                    showToast(err.message || 'Error transcribing audio.');
+                  } finally {
+                    setMicListeningState(false);
+                  }
+                };
+              } catch (e) {
+                console.error('Audio processing error:', e);
+                showToast("Error processing recorded audio.");
+                setMicListeningState(false);
+              }
+            };
+
+            mediaRecorder.start(250);
+            setMicListeningState(true, "Recording audio... Click mic to stop and transcribe");
+            showToast("Recording audio (click mic again to stop & transcribe)...");
+          } catch (err) {
+            console.error('getUserMedia error:', err);
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+              showToast("Microphone permission denied. Please allow microphone access in your browser.");
+            } else {
+              showToast("Unable to access microphone: " + (err.message || 'Check microphone'));
+            }
+            setMicListeningState(false);
+          }
+        }
+
+        function startWebSpeechListening() {
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SpeechRecognition) {
+            startMediaRecorderFallback();
+            return;
+          }
+
+          try {
+            speechRecognizer = new SpeechRecognition();
+            speechRecognizer.continuous = true;
+            speechRecognizer.interimResults = true;
+            speechRecognizer.lang = 'en-IN';
+
+            // Keep text already in the box and append new speech after it with a space
+            const current = spokenInput ? spokenInput.value.trim() : '';
+            speechBaseText = current ? (current + ' ') : '';
+
+            speechRecognizer.onstart = function() {
+              setMicListeningState(true, "Listening... Speak your reasoning (click mic to stop)");
+              showToast("Microphone listening in English (en-IN)... Speak your reasoning");
+            };
+
+            speechRecognizer.onresult = function(event) {
+              let sessionTranscript = '';
+              for (let i = 0; i < event.results.length; ++i) {
+                sessionTranscript += event.results[i][0].transcript;
+              }
+              if (spokenInput) {
+                spokenInput.value = speechBaseText + sessionTranscript;
+              }
+              currentKey = null;
+              if (btnGenerate) btnGenerate.disabled = false;
+            };
+
+            speechRecognizer.onerror = function(event) {
+              console.warn('Speech recognition error:', event.error);
+              let errorMsg = '';
+              if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                errorMsg = "Microphone permission denied. Please allow microphone access in your browser.";
+                showToast(errorMsg);
+                stopAndReleaseMic();
+              } else if (event.error === 'no-speech') {
+                errorMsg = "No speech detected. Please speak clearly into your microphone.";
+                showToast(errorMsg);
+                stopAndReleaseMic();
+              } else if (event.error === 'network') {
+                errorMsg = "Network error during speech recognition. Trying audio recorder...";
+                showToast(errorMsg);
+                stopAndReleaseMic();
+                startMediaRecorderFallback();
+              } else {
+                errorMsg = "Speech recognition error: " + event.error;
+                showToast(errorMsg);
+                stopAndReleaseMic();
+              }
+            };
+
+            speechRecognizer.onend = function() {
+              stopAndReleaseMic();
+            };
+
+            speechRecognizer.start();
+          } catch (err) {
+            console.warn('Web Speech API threw on start, trying MediaRecorder fallback:', err);
+            startMediaRecorderFallback();
+          }
+        }
+
+        function toggleMicrophone() {
+          if (isListening) {
+            stopAndReleaseMic();
+            showToast("Stopped listening");
+          } else {
+            startWebSpeechListening();
+          }
+        }
+
+        if (micBtn) {
+          micBtn.addEventListener('click', toggleMicrophone);
+        }
+
+        // Typing, editing, or clearing reasoning box clears preset memory and enables generate button
+        if (spokenInput) {
+          spokenInput.addEventListener('input', function() {
+            currentKey = null;
+            if (btnGenerate) btnGenerate.disabled = false;
+          });
+        }
+
+        // Release microphone when leaving page
+        window.addEventListener('beforeunload', stopAndReleaseMic);
+        window.addEventListener('pagehide', stopAndReleaseMic);
+
+        // 11. Generate Action with Gemini API
+        function showEmptyInputWarning(msg) {
+          document.querySelectorAll('.gen-error-banner').forEach(el => el.remove());
+          const warnBox = document.createElement('div');
+          warnBox.className = 'gen-error-banner';
+          warnBox.style.cssText = 'padding: 10px 14px; background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 8px; color: #eab308; font-size: 12.5px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;';
+          warnBox.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>${escapeHtml(msg)}</span>
+            </div>
+            <button type="button" class="btn-copy-snippet" style="color: #eab308; cursor: pointer; padding: 2px 6px;" onclick="this.parentElement.remove()">Dismiss</button>
+          `;
+          const activeView = viewPR.style.display !== 'none' ? viewPR : viewFlags.style.display !== 'none' ? viewFlags : viewChangelog;
+          activeView.prepend(warnBox);
+        }
+
+        let generateAbortController = null;
+        let generateTimeoutId = null;
+
+        async function generatePR() {
+          if (btnGenerate.disabled) return;
+
+          // Always read exact currently shown diff from viewer
+          let activeDiff = currentDiffText || '';
+          const diffTextarea = document.getElementById('git-diff-textarea');
+          if (activeTab === 'diff' && diffTextarea) {
+            activeDiff = diffTextarea.value;
+            currentDiffText = diffTextarea.value;
+          }
+          const diff = activeDiff.trim();
+          const reasoning = spokenInput ? spokenInput.value.trim() : '';
+
+          // If reasoning is empty: show short friendly warning and make NO API call
+          if (!reasoning) {
+            const msg = "Please enter or speak your reasoning before generating.";
+            showToast(msg);
+            showEmptyInputWarning(msg);
+            btnGenerate.disabled = false;
+            return;
+          }
+
+          // If diff is empty: show short friendly warning and make NO API call
+          if (!diff) {
+            const msg = "Please provide a code diff before generating.";
+            showToast(msg);
+            showEmptyInputWarning(msg);
+            btnGenerate.disabled = false;
+            return;
+          }
+
+          document.querySelectorAll('.gen-error-banner').forEach(el => el.remove());
+
+          // Prevent double clicks while generating
+          btnGenerate.disabled = true;
+          generateBtnText.textContent = "Synthesizing with Gemini...";
+          generateIcon.style.animation = "spin 1s linear infinite";
+
+          generateAbortController = new AbortController();
+          generateTimeoutId = setTimeout(function() {
+            if (generateAbortController) {
+              generateAbortController.abort();
+            }
+          }, 45000);
+
+          try {
+            const res = await fetch('/api/generate-pr', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ diff, reasoning }),
+              signal: generateAbortController.signal
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+              throw new Error(data.error || `Server responded with error ${res.status}`);
+            }
+
+            // Populate PR Description safely via textContent
+            if (resSummary) resSummary.textContent = data.summary || 'Not mentioned in diff or reasoning.';
+            if (resWhy) resWhy.textContent = data.why || 'Not mentioned in diff or reasoning.';
+            if (resAlternatives) resAlternatives.textContent = data.alternatives || 'Not mentioned in diff or reasoning.';
+            if (resRisks) resRisks.textContent = data.risks_and_testing || 'Not mentioned in diff or reasoning.';
+
+            // Populate Changelog
+            renderChangelog({ changelog: data.changelog });
+
+            // Populate Flags (real result count)
+            renderFlagsList(data.flags || []);
+
+            activateResultTab('pr');
+
+            // Notify user if diff was shortened
+            if (data.wasShortened) {
+              showToast("⚠️ Large diff was shortened to first 60,000 characters for analysis.");
+            } else {
+              showToast("✓ Generated PR description and review flags!");
+            }
+
+            // Reveal sections one by one
+            const blocks = viewPR.querySelectorAll('.pr-section-block');
+            blocks.forEach(function(block, idx) {
+              block.style.opacity = '0';
+              block.style.transform = 'translateY(6px)';
+              block.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+              setTimeout(function() {
+                block.style.opacity = '1';
+                block.style.transform = 'translateY(0)';
+              }, idx * 110);
+            });
+          } catch (err) {
+            console.error('Generation failed:', err);
+            if (err.name === 'AbortError') {
+              showGenerationError("Generation timed out after 45 seconds. Please click Retry.");
+            } else {
+              showGenerationError(err.message || 'Generation failed. Please try again.');
+            }
+          } finally {
+            clearTimeout(generateTimeoutId);
+            generateTimeoutId = null;
+            generateAbortController = null;
+            btnGenerate.disabled = false;
+            generateBtnText.textContent = "Generate PR description";
+            generateIcon.style.animation = "";
+          }
+        }
+
+        function showGenerationError(msg) {
+          document.querySelectorAll('.gen-error-banner').forEach(el => el.remove());
+          const errBox = document.createElement('div');
+          errBox.className = 'gen-error-banner';
+          errBox.style.cssText = 'padding: 12px 14px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; color: #ef4444; font-size: 12.5px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;';
+          errBox.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>${escapeHtml(msg)}</span>
+            </div>
+            <button type="button" class="btn-retry-action btn-copy-snippet" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); font-weight: 600; padding: 4px 10px; cursor: pointer;">Retry</button>
+          `;
+          errBox.querySelector('.btn-retry-action').addEventListener('click', function() {
+            errBox.remove();
+            generatePR();
+          });
+
+          const activeView = viewPR.style.display !== 'none' ? viewPR : viewFlags.style.display !== 'none' ? viewFlags : viewChangelog;
+          activeView.prepend(errBox);
+          showToast("Generation failed. Click Retry to try again.");
+        }
+
+        if (btnGenerate) {
+          btnGenerate.addEventListener('click', generatePR);
+        }
+
+        // 12. Result Tabs
+        function activateResultTab(tabName) {
+          tabPR.classList.toggle('active', tabName === 'pr');
+          tabChangelog.classList.toggle('active', tabName === 'changelog');
+          tabFlags.classList.toggle('active', tabName === 'flags');
+
+          tabPR.setAttribute('aria-selected', tabName === 'pr');
+          tabChangelog.setAttribute('aria-selected', tabName === 'changelog');
+          tabFlags.setAttribute('aria-selected', tabName === 'flags');
+
+          viewPR.style.display = tabName === 'pr' ? 'flex' : 'none';
+          viewChangelog.style.display = tabName === 'changelog' ? 'flex' : 'none';
+          viewFlags.style.display = tabName === 'flags' ? 'flex' : 'none';
+        }
+
+        if (tabPR) tabPR.addEventListener('click', function() { activateResultTab('pr'); });
+        if (tabChangelog) tabChangelog.addEventListener('click', function() { activateResultTab('changelog'); });
+        if (tabFlags) tabFlags.addEventListener('click', function() { activateResultTab('flags'); });
+
+        // 13. Copy Functions (Clean Markdown & Individual Snippets)
+        if (copyAllBtn) {
+          copyAllBtn.addEventListener('click', function() {
+            let changelogText = '';
+            if (changelogList) {
+              const bullets = Array.from(changelogList.querySelectorAll('div > span:last-child')).map(s => s.textContent.trim());
+              changelogText = bullets.join(' ');
+            }
+
+            const md = [
+              "## Summary",
+              resSummary.textContent.trim(),
+              "",
+              "## Why",
+              resWhy.textContent.trim(),
+              "",
+              "## Alternatives",
+              resAlternatives.textContent.trim(),
+              "",
+              "## Risks and testing",
+              resRisks.textContent.trim(),
+              "",
+              "## Changelog",
+              "- " + changelogText
+            ].join("\n");
+
+            copyToClipboard(md, function() {
+              copyAllLabel.textContent = "✓ Copied Markdown!";
+              showToast("Full PR markdown copied to clipboard!");
+              setTimeout(function() {
+                copyAllLabel.textContent = "Copy all as Markdown";
+              }, 2000);
+            });
+          });
+        }
+
+        document.querySelectorAll('.btn-copy-snippet').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            const target = btn.getAttribute('data-copy-target');
+            let textToCopy = "";
+            if (target === 'summary') textToCopy = resSummary.textContent.trim();
+            else if (target === 'why') textToCopy = resWhy.textContent.trim();
+            else if (target === 'alternatives') textToCopy = resAlternatives.textContent.trim();
+            else if (target === 'risks') textToCopy = resRisks.textContent.trim();
+
+            copyToClipboard(textToCopy, function() {
+              const label = btn.querySelector('span');
+              const original = label ? label.textContent : "Copy";
+              if (label) label.textContent = "Copied";
+              showToast("Copied " + target + " to clipboard");
+              setTimeout(function() {
+                if (label) label.textContent = original;
+              }, 1800);
+            });
+          });
+        });
+
+        // 14. Theme Switcher (Preserves original light default theme)
+        function setTheme(theme) {
+          document.documentElement.setAttribute('data-theme', theme);
+          localStorage.setItem('speakpr-theme', theme);
+          if (sunIcon && moonIcon) {
+            if (theme === 'dark') {
+              sunIcon.style.display = 'block';
+              moonIcon.style.display = 'none';
+            } else {
+              sunIcon.style.display = 'none';
+              moonIcon.style.display = 'block';
+            }
+          }
+        }
+
+        const savedTheme = localStorage.getItem('speakpr-theme');
+        if (savedTheme === 'dark' || savedTheme === 'light') {
+          setTheme(savedTheme);
+        }
+
+        if (themeBtn) {
+          themeBtn.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            setTheme(next);
+            showToast("Switched to " + next + " mode");
+          });
+        }
+
+        // 15. Smooth Scrolling for Navigation
+        document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+          anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (!href || href === '#') return;
+            const targetEl = document.querySelector(href);
+            if (targetEl) {
+              e.preventDefault();
+              targetEl.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+        });
+
+        // 16. "Try the demo" Flow
+        function runDemoFlow() {
+          const ws = document.getElementById('workspace');
+          if (ws) ws.scrollIntoView({ behavior: 'smooth' });
+          if (selectScenario) selectScenario.value = 'rate-limiting';
+          loadScenario('rate-limiting');
+          showToast("Demo loaded: Running Generate PR description...");
+          setTimeout(function() {
+            generatePR();
+          }, 450);
+        }
+
+        const tryDemoNav = document.querySelector('.btn-try-demo-nav');
+        if (tryDemoNav) {
+          tryDemoNav.addEventListener('click', function(e) {
+            e.preventDefault();
+            runDemoFlow();
+          });
+        }
+
+        const heroTryBtn = document.getElementById('hero-btn-try');
+        if (heroTryBtn) {
+          heroTryBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            runDemoFlow();
+          });
+        }
+
+        // 17. Utilities
+        let toastTimeout = null;
+        function showToast(message) {
+          if (!toast || !toastText) return;
+          toastText.textContent = message;
+          toast.classList.add('show');
+          clearTimeout(toastTimeout);
+          toastTimeout = setTimeout(function() {
+            toast.classList.remove('show');
+          }, 2400);
+        }
+
+        function copyToClipboard(text, callback) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(callback).catch(function() {
+              fallbackCopy(text, callback);
+            });
+          } else {
+            fallbackCopy(text, callback);
+          }
+        }
+
+        function fallbackCopy(text, callback) {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          try {
+            document.execCommand('copy');
+            if (callback) callback();
+          } catch (e) {}
+          document.body.removeChild(textarea);
+        }
+
+        function escapeHtml(string) {
+          return String(string)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
+
+        // 18. Nav Active Indicator Tracking on Scroll
+        const navSections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links-center .nav-link');
+
+        function updateActiveNav() {
+          const scrollPos = window.pageYOffset + 120;
+          navSections.forEach(function(section) {
+            const top = section.offsetTop;
+            const height = section.offsetHeight;
+            const id = section.getAttribute('id');
+            if (scrollPos >= top && scrollPos < top + height) {
+              navLinks.forEach(function(link) {
+                if (link.getAttribute('href') === '#' + id) {
+                  link.classList.add('active');
+                } else {
+                  link.classList.remove('active');
+                }
+              });
+            }
+          });
+        }
+        window.addEventListener('scroll', updateActiveNav, { passive: true });
+        updateActiveNav();
+
+        // 19. Initialize First Scenario on Load
+        loadScenario('rate-limiting');
+
+      })();
+    </script>
+  </body>
+</html>
