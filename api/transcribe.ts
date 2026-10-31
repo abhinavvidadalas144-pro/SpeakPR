@@ -3,33 +3,34 @@ import {
   MAX_AUDIO_BYTES,
   MissingApiKeyError,
   getGenAI,
-  parseRequestBody
+  parseRequestBody,
+  sendJson
 } from './_shared';
 
 export default async function handler(req: any, res: any) {
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Allow', 'POST, OPTIONS');
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST, OPTIONS');
-    return res.status(405).json({ error: 'Method not allowed. Use POST.' });
-  }
-
   try {
-    const body = parseRequestBody(req);
+    if (req.method === 'OPTIONS') {
+      if (res.setHeader) res.setHeader('Allow', 'POST, OPTIONS');
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (req.method !== 'POST') {
+      if (res.setHeader) res.setHeader('Allow', 'POST, OPTIONS');
+      return sendJson(res, 405, { error: 'Method not allowed. Use POST.' });
+    }
+
+    const body = await parseRequestBody(req);
     const { audio, mimeType } = body;
 
     if (!audio || typeof audio !== 'string') {
-      return res.status(400).json({ error: 'Audio data is required.' });
+      return sendJson(res, 400, { error: 'Audio data is required.' });
     }
 
     const cleanBase64 = audio.includes('base64,') ? audio.split('base64,')[1] : audio;
     const approximateBinaryBytes = Math.floor((cleanBase64.length * 3) / 4);
 
     if (approximateBinaryBytes > MAX_AUDIO_BYTES) {
-      return res.status(413).json({
+      return sendJson(res, 413, {
         error: 'Audio file exceeds the 4 MB limit. Please record a shorter message or type your reasoning.'
       });
     }
@@ -38,8 +39,8 @@ export default async function handler(req: any, res: any) {
     try {
       ai = getGenAI();
     } catch (err) {
-      if (err instanceof MissingApiKeyError) {
-        return res.status(500).json({ error: 'Server is missing GEMINI_API_KEY' });
+      if (err instanceof MissingApiKeyError || !process.env.GEMINI_API_KEY) {
+        return sendJson(res, 500, { error: 'Server is missing GEMINI_API_KEY' });
       }
       throw err;
     }
@@ -49,7 +50,11 @@ export default async function handler(req: any, res: any) {
 
     for (const model of CANDIDATE_MODELS) {
       try {
-        const response = await ai.models.generateContent({
+        let timer: any;
+        const timeoutPromise = new Promise((_, reject) => {
+          timer = setTimeout(() => reject(new Error(`Model ${model} timed out after 15s`)), 15000);
+        });
+        const callPromise = ai.models.generateContent({
           model,
           contents: [
             {
@@ -64,7 +69,10 @@ export default async function handler(req: any, res: any) {
           ]
         });
 
-        const text = response.text?.trim();
+        const response: any = await Promise.race([callPromise, timeoutPromise]);
+        clearTimeout(timer);
+
+        const text = response?.text?.trim();
         if (text) {
           transcribedText = text;
           break;
@@ -75,15 +83,15 @@ export default async function handler(req: any, res: any) {
     }
 
     if (!transcribedText) {
-      return res.status(503).json({
+      return sendJson(res, 503, {
         error: 'Unable to transcribe audio at this time. Please speak clearly or type your reasoning.'
       });
     }
 
-    return res.status(200).json({ text: transcribedText });
+    return sendJson(res, 200, { text: transcribedText });
   } catch (err: any) {
     console.error('Error in /api/transcribe:', err);
-    return res.status(500).json({
+    return sendJson(res, 500, {
       error: 'Failed to transcribe audio. Please try again.'
     });
   }

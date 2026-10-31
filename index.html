@@ -1,6 +1,20 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
   <head>
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('speakpr-theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.setAttribute('data-theme', saved);
+          } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SpeakPR — Say the why. Ship the PR.</title>
@@ -289,6 +303,19 @@
         background: rgba(255, 255, 255, 0.12);
         color: #FFFFFF;
         border-color: rgba(255, 255, 255, 0.22);
+      }
+
+      [data-theme="dark"] .sun-icon {
+        display: block !important;
+      }
+      [data-theme="dark"] .moon-icon {
+        display: none !important;
+      }
+      [data-theme="light"] .sun-icon {
+        display: none !important;
+      }
+      [data-theme="light"] .moon-icon {
+        display: block !important;
       }
 
       /* Compact, refined CTA (modest radius, subtle arrow, no exaggerated pill) */
@@ -1380,7 +1407,7 @@
         <div class="nav-right-cluster">
           <button type="button" class="theme-btn-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
             <!-- Sun Icon (Active in Dark Mode) -->
-            <svg class="sun-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="1" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -2342,6 +2369,18 @@
           }
         });
 
+        async function safelyParseJsonResponse(res) {
+          const contentType = (res && res.headers && res.headers.get('content-type')) || '';
+          if (!contentType.toLowerCase().includes('application/json')) {
+            throw new Error("The server had a problem. Please retry.");
+          }
+          try {
+            return await res.json();
+          } catch (e) {
+            throw new Error("The server had a problem. Please retry.");
+          }
+        }
+
         // 5. GitHub PR Tab
         function renderGitHubPRTab() {
           activeTab = 'gh';
@@ -2405,7 +2444,7 @@
                 body: JSON.stringify({ url })
               });
 
-              const data = await res.json();
+              const data = await safelyParseJsonResponse(res);
               if (!res.ok) {
                 throw new Error(data.error || 'Failed to fetch PR diff.');
               }
@@ -2757,7 +2796,7 @@
                       })
                     });
 
-                    const data = await resp.json();
+                    const data = await safelyParseJsonResponse(resp);
                     if (!resp.ok) {
                       throw new Error(data.error || 'Failed to transcribe audio.');
                     }
@@ -2966,7 +3005,7 @@
               signal: generateAbortController.signal
             });
 
-            const data = await res.json();
+            const data = await safelyParseJsonResponse(res);
             if (!res.ok) {
               throw new Error(data.error || `Server responded with error ${res.status}`);
             }
@@ -3122,10 +3161,14 @@
           });
         });
 
-        // 14. Theme Switcher (Preserves original light default theme)
+        // 14. Theme Switcher (Dark mode by default, persisted across sessions)
         function setTheme(theme) {
           document.documentElement.setAttribute('data-theme', theme);
-          localStorage.setItem('speakpr-theme', theme);
+          try {
+            localStorage.setItem('speakpr-theme', theme);
+          } catch (e) {
+            // Storage unavailable or disabled
+          }
           if (sunIcon && moonIcon) {
             if (theme === 'dark') {
               sunIcon.style.display = 'block';
@@ -3137,14 +3180,20 @@
           }
         }
 
-        const savedTheme = localStorage.getItem('speakpr-theme');
-        if (savedTheme === 'dark' || savedTheme === 'light') {
-          setTheme(savedTheme);
+        let initialTheme = 'dark';
+        try {
+          const savedTheme = localStorage.getItem('speakpr-theme');
+          if (savedTheme === 'dark' || savedTheme === 'light') {
+            initialTheme = savedTheme;
+          }
+        } catch (e) {
+          initialTheme = 'dark';
         }
+        setTheme(initialTheme);
 
         if (themeBtn) {
           themeBtn.addEventListener('click', function() {
-            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
             const next = current === 'dark' ? 'light' : 'dark';
             setTheme(next);
             showToast("Switched to " + next + " mode");

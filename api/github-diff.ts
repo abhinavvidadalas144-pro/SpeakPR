@@ -1,26 +1,26 @@
-import { fetchGitHubDiffData, parseRequestBody } from './_shared';
+import { fetchGitHubDiffData, parseRequestBody, sendJson } from './_shared';
 
 export default async function handler(req: any, res: any) {
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Allow', 'POST, OPTIONS');
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST, OPTIONS');
-    return res.status(405).json({ error: 'Method not allowed. Use POST.' });
-  }
-
   try {
-    const body = parseRequestBody(req);
+    if (req.method === 'OPTIONS') {
+      if (res.setHeader) res.setHeader('Allow', 'POST, OPTIONS');
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (req.method !== 'POST') {
+      if (res.setHeader) res.setHeader('Allow', 'POST, OPTIONS');
+      return sendJson(res, 405, { error: 'Method not allowed. Use POST.' });
+    }
+
+    const body = await parseRequestBody(req);
     const { url } = body;
 
     const data = await fetchGitHubDiffData(url);
-    return res.status(200).json(data);
+    return sendJson(res, 200, data);
   } catch (err: any) {
     console.error('Error fetching GitHub PR diff:', err);
-    const status = err.status || 500;
+    const status = (typeof err.status === 'number' && err.status >= 400 && err.status < 600) ? err.status : 500;
     const message = err.message || 'Failed to fetch GitHub PR diff.';
-    return res.status(status).json({ error: message });
+    return sendJson(res, status, { error: message });
   }
 }

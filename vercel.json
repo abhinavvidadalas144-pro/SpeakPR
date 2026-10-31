@@ -1,6 +1,9 @@
 {
   "outputDirectory": "dist",
   "functions": {
+    "api/github-diff.ts": {
+      "maxDuration": 60
+    },
     "api/generate-pr.ts": {
       "maxDuration": 60
     },
@@ -9,10 +12,6 @@
     }
   },
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
     {
       "source": "/((?!api/).*)",
       "destination": "/index.html"

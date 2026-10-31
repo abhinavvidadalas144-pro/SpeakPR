@@ -137,7 +137,7 @@ export async function fetchGitHubDiffData(url: string) {
 
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3.diff',
-    'User-Agent': 'SpeakPR-App/1.0'
+    'User-Agent': 'speakpr'
   };
 
   if (process.env.GITHUB_TOKEN) {
@@ -204,14 +204,60 @@ export async function fetchGitHubDiffData(url: string) {
   };
 }
 
-export function parseRequestBody(req: any): any {
-  if (!req.body) return {};
-  if (typeof req.body === 'string') {
-    try {
-      return JSON.parse(req.body);
-    } catch {
-      return {};
+export function sendJson(res: any, status: number, data: any) {
+  try {
+    if (res && typeof res.setHeader === 'function') {
+      res.setHeader('Content-Type', 'application/json');
+    }
+    if (res && typeof res.status === 'function' && typeof res.json === 'function') {
+      return res.status(status).json(data);
+    }
+    if (res && typeof res.writeHead === 'function' && typeof res.end === 'function') {
+      res.writeHead(status, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(data));
+    }
+    if (res && typeof res.end === 'function') {
+      res.statusCode = status;
+      return res.end(JSON.stringify(data));
+    }
+  } catch (err) {
+    console.error('sendJson error:', err);
+  }
+}
+
+export async function parseRequestBody(req: any): Promise<any> {
+  if (req.body !== undefined && req.body !== null) {
+    if (typeof req.body === 'string') {
+      try {
+        return JSON.parse(req.body);
+      } catch {
+        return {};
+      }
+    }
+    if (typeof req.body === 'object') {
+      return req.body;
     }
   }
-  return req.body;
+
+  if (typeof req.on === 'function') {
+    return new Promise((resolve) => {
+      let bodyStr = '';
+      req.on('data', (chunk: any) => {
+        bodyStr += chunk;
+      });
+      req.on('end', () => {
+        if (!bodyStr || !bodyStr.trim()) return resolve({});
+        try {
+          resolve(JSON.parse(bodyStr));
+        } catch {
+          resolve({});
+        }
+      });
+      req.on('error', () => {
+        resolve({});
+      });
+    });
+  }
+
+  return {};
 }
