@@ -1,21 +1,111 @@
-import {
-  CANDIDATE_MODELS,
-  MAX_AUDIO_BYTES,
-  MissingApiKeyError,
-  getGenAI,
-  parseRequestBody,
-  sendJson
-} from './_shared';
+// Vercel Serverless Function: POST /api/transcribe
+// Self-contained to avoid ESM relative module resolution issues on Vercel runtime.
 
-export default async function handler(req: any, res: any) {
+import { GoogleGenAI } from '@google/genai';
+
+const CANDIDATE_MODELS = ['gemini-3.8-flash', 'gemini-2.5-flash'];
+const MAX_AUDIO_BYTES = 4 * 1024 * 1024; // 4 MB limit
+
+function sendJson(res: any, status: number, data: any) {
+  try {
+    if (res) {
+      if (typeof res.setHeader === 'function') {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      }
+      if (typeof res.status === 'function' && typeof res.json === 'function') {
+        return res.status(status).json(data);
+      }
+      if (typeof res.writeHead === 'function' && typeof res.end === 'function') {
+        res.writeHead(status, {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        });
+        return res.end(JSON.stringify(data));
+      }
+      if (typeof res.end === 'function') {
+        res.statusCode = status;
+        return res.end(JSON.stringify(data));
+      }
+    }
+  } catch (err) {
+    console.error('sendJson error in transcribe:', err);
+  }
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    }
+  });
+}
+
+async function parseRequestBody(req: any): Promise<any> {
+  if (!req) return {};
+
+  if (req.body !== undefined && req.body !== null) {
+    if (typeof req.body === 'string') {
+      try {
+        return JSON.parse(req.body);
+      } catch {
+        return {};
+      }
+    }
+    if (typeof req.body === 'object') {
+      return req.body;
+    }
+  }
+
+  // If request has already ended or is complete, don't wait on stream events
+  if (req.readableEnded || req.complete) {
+    return {};
+  }
+
+  if (typeof req.json === 'function') {
+    try {
+      return await req.json();
+    } catch {
+      return {};
+    }
+  }
+
+  if (typeof req.on === 'function') {
+    return new Promise((resolve) => {
+      let bodyStr = '';
+      const timer = setTimeout(() => resolve({}), 2000);
+      req.on('data', (chunk: any) => {
+        bodyStr += chunk;
+      });
+      req.on('end', () => {
+        clearTimeout(timer);
+        if (!bodyStr || !bodyStr.trim()) return resolve({});
+        try {
+          resolve(JSON.parse(bodyStr));
+        } catch {
+          resolve({});
+        }
+      });
+      req.on('error', () => {
+        clearTimeout(timer);
+        resolve({});
+      });
+    });
+  }
+
+  return {};
+}
+
+export default async function handler(req: any, res?: any) {
   try {
     if (req.method === 'OPTIONS') {
-      if (res.setHeader) res.setHeader('Allow', 'POST, OPTIONS');
+      if (res && res.setHeader) res.setHeader('Allow', 'POST, OPTIONS');
       return sendJson(res, 200, { ok: true });
     }
 
     if (req.method !== 'POST') {
-      if (res.setHeader) res.setHeader('Allow', 'POST, OPTIONS');
+      if (res && res.setHeader) res.setHeader('Allow', 'POST, OPTIONS');
       return sendJson(res, 405, { error: 'Method not allowed. Use POST.' });
     }
 
@@ -26,28 +116,41 @@ export default async function handler(req: any, res: any) {
       return sendJson(res, 400, { error: 'Audio data is required.' });
     }
 
-    const cleanBase64 = audio.includes('base64,') ? audio.split('base64,')[1] : audio;
-    const approximateBinaryBytes = Math.floor((cleanBase64.length * 3) / 4);
-
-    if (approximateBinaryBytes > MAX_AUDIO_BYTES) {
-      return sendJson(res, 413, {
-        error: 'Audio file exceeds the 4 MB limit. Please record a shorter message or type your reasoning.'
-      });
+    let base64Data = audio;
+    if (base64Data.includes(',')) {
+      base64Data = base64Data.split(',')[1];
     }
 
-    let ai;
-    try {
-      ai = getGenAI();
-    } catch (err) {
-      if (err instanceof MissingApiKeyError || !process.env.GEMINI_API_KEY) {
-        return sendJson(res, 500, { error: 'Server is missing GEMINI_API_KEY' });
+    const byteEstimate = (base64Data.length * 3) / 4;
+    if (byteEstimate > MAX_AUDIO_BYTES) {
+      return sendJson(res, 400, { error: 'Audio file too large. Maximum size is 4MB.' });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || !apiKey.trim()) {
+      return sendJson(res, 500, { error: 'Server is missing GEMINI_API_KEY' });
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
+
+    const contents = [
+      {
+        role: 'user',
+        parts: [
+          {
+            inlineData: {
+              data: base64Data,
+              mimeType: mimeType || 'audio/webm'
+            }
+          },
+          {
+            text: 'Transcribe the spoken audio verbatim in English (Indian English accent context). Return ONLY the transcribed text. Do not add explanations, conversational commentary, or formatting.'
+          }
+        ]
       }
-      throw err;
-    }
+    ];
 
-    const resolvedMime = mimeType || 'audio/webm';
-    let transcribedText = '';
-
+    let text = '';
     for (const model of CANDIDATE_MODELS) {
       try {
         let timer: any;
@@ -56,43 +159,28 @@ export default async function handler(req: any, res: any) {
         });
         const callPromise = ai.models.generateContent({
           model,
-          contents: [
-            {
-              inlineData: {
-                mimeType: resolvedMime,
-                data: cleanBase64
-              }
-            },
-            {
-              text: 'Transcribe the spoken reasoning in this audio accurately and cleanly. Return ONLY the transcribed text, without any additional explanations, quotes, markdown formatting, or timestamps.'
-            }
-          ]
+          contents: contents as any
         });
 
         const response: any = await Promise.race([callPromise, timeoutPromise]);
         clearTimeout(timer);
 
-        const text = response?.text?.trim();
-        if (text) {
-          transcribedText = text;
+        if (response && response.text) {
+          text = response.text.trim();
           break;
         }
       } catch (err: any) {
-        console.warn(`Model candidate ${model} transcription failed, trying next candidate:`, err.message || err);
+        console.warn(`Transcribe model ${model} failed, trying next:`, err.message || err);
       }
     }
 
-    if (!transcribedText) {
-      return sendJson(res, 503, {
-        error: 'Unable to transcribe audio at this time. Please speak clearly or type your reasoning.'
-      });
+    if (!text) {
+      return sendJson(res, 503, { error: 'Could not transcribe audio. Please try speaking again or type in the box.' });
     }
 
-    return sendJson(res, 200, { text: transcribedText });
+    return sendJson(res, 200, { text });
   } catch (err: any) {
     console.error('Error in /api/transcribe:', err);
-    return sendJson(res, 500, {
-      error: 'Failed to transcribe audio. Please try again.'
-    });
+    return sendJson(res, 500, { error: 'Audio transcription failed. Please try again.' });
   }
 }
